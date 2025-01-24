@@ -1,0 +1,52 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{amsmath, amsthm, amsfonts, amssymb}
+\usepackage{microtype}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+% \geometry{margin=1in}
+
+\newtheoremstyle{exerciseStyle}
+{ } % Space above
+{ } % Space below
+{ \normalfont } % Body font
+{ } % Indent amount
+{ \bfseries } % Theorem head font
+{ } % Punctuation after theorem head
+{ } % Space after theorem head
+{ \thmname{#1}\thmnumber{ #2} } % Theorem head spec (can be left empty, meaning `normal`)
+\theoremstyle{exerciseStyle}
+\newtheorem{exercise}{Exercise}[section]
+
+\newtheoremstyle{solutionStyle}
+{ } % Space above
+{ } % Space below
+{ \normalfont } % Body font
+{ } % Indent amount
+{ \bfseries } % Theorem head font
+{ } % Punctuation after theorem head
+{ } % Space after theorem head
+{ \thmname{#1}\thmnumber{ #2} } % Theorem head spec (can be left empty, meaning `normal`)
+\theoremstyle{solutionStyle}
+\newtheorem{solution}{Solution}[section]
+
+\title{
+    MEK4250\\
+    \small{Exercises for Finite Elements in Computational Mechanics}
+}
+\author{August Femtehjell}
+\date{January 24, 2025}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Elliptic equations and the finite element method}
+
+\input{1_section/1.tex}
+
+\end{document}
