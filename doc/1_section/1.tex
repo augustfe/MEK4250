@@ -60,3 +60,11 @@
         \caption{Approximation of $u$ with $N = 40$ sine basis functions.\label{fig:1_1}}
     \end{figure}
 \end{solution}
+
+\begin{exercise}
+    Consider the same problem as in the previous exercise, but using the Bernstein polynomials.
+    That is, the basis for the Bernstein polynomial of order $N$ on the unit inteval is $B_k^N(x) = x^k (1 - x)^{N - k}$ for $k = 0, \ldots, N$.
+    Let $u = \sum_{k = 0}^N u_k B_k^N(x)$ and $v = B_l^N(x)$ for $l = 0, \ldots, N$ and solve $(1.9)$.
+    What is the error in $L_2$ and $L_\infty$ in terms of $N$ for $N = 1, 2, \ldots, 10$.
+    Remark: Do the basis functions satisfy the boundary condtions? Should some of them be removed?
+\end{exercise}
