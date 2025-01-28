@@ -21,7 +21,7 @@
         = \frac{\pi^2 i^2}{2} \delta_{ij}.
     \end{align*}
 
-    As we are given that the Dirichelt boundary conditions cover the entire boundary, and $\partial \Omega_D \cap \partial \Omega_N = \emptyset$, we have that the Neumann boundary integral is zero.
+    As we are given that the Dirichlet boundary conditions cover the entire boundary, and $\partial \Omega_D \cap \partial \Omega_N = \emptyset$, we have that the Neumann boundary integral is zero.
     The $b$ vector is then given by
     \begin{align*}
         b_i &= \int_\Omega f N_i \, dx
@@ -68,3 +68,59 @@
     What is the error in $L_2$ and $L_\infty$ in terms of $N$ for $N = 1, 2, \ldots, 10$.
     Remark: Do the basis functions satisfy the boundary condtions? Should some of them be removed?
 \end{exercise}
+
+\begin{solution}
+    The Bernstein polynomials $B_0^N$ and $B_N^N$ both need to be removed, as they do not satisfy the Dirichlet boundary conditions, as $B_0^N(0)  = 1 = B_N^N(1)$.
+    We therefore need atleast $N = 3$, in order to get an atleast somewhat viable solution.
+
+    The Bernstein basis polynomials are defined as
+    \begin{equation*}
+        B_k^N(x) = \binom{N}{k} x^k (1 - x)^{N - k}.
+    \end{equation*}
+    Some useful properties which might come in handy are
+    \begin{enumerate}
+        \item The derivative of a basis polynomials is
+            \begin{equation*}
+                \left( B_k^N(x) \right)' = N \left( B_{k-1}^{N-1}(x) - B_{k}^{n-1}(x) \right),
+            \end{equation*}
+            where we follow the convention of setting $B_{-1}^N(x) = 0 = B_{N+1}^N(x)$.
+
+        \item The definite integral on the unit line is given by
+            \begin{equation*}
+                \int_0^1 B_{k}^N(x) = \frac{1}{N+1} \quad \text{for } k = 0, 1, \ldots, N.
+            \end{equation*}
+
+        \item The multiple of two Bernstein polynomials is
+            \begin{align*}
+                B_k^N(x) \cdot B_q^M(x) &= \binom{N}{k} x^k (1 - x)^{N - k} \binom{M}{q} x^q (1 - x)^{M - q} \\
+                &= \binom{N}{k} \binom{M}{q} x^{k+q} (1 - x)^{N + M - k - q} \\
+                &= \frac{\binom{N}{k}\binom{M}{q}}{\binom{N + M}{k + q}} B_{k+q}^{N + M}(x)
+            \end{align*}
+    \end{enumerate}
+
+    From these, we can gather that
+    \begin{equation*}
+        \int_{0}^{1} B_k^N(x) B_q^M(x) \ dx = \frac{\binom{N}{k}\binom{M}{q}}{\binom{N + M}{k + q}} \int_0^1 B_{k+q}^{N + M}(x) \ dx = \frac{\binom{N}{k}\binom{M}{q}}{(N + M + 1) \binom{N + M}{k + q}}.
+    \end{equation*}
+    The terms in the stiffness matrix are then given by
+    \begin{align*}
+        A_{ij} &= \int_{0}^{1} \nabla B_i^N(x) \cdot \nabla B_{j}^N(x) \ dx \\
+        &= N^2 \int_{0}^{1} \left( B_{i-1}^{N - 1} - B_{i}^{N - 1} \right) \left( B_{j-1}^{N - 1} - B_{j}^{N - 1} \right) \ dx \\
+        &= N^2
+        \int_{0}^{1} B_{i-1}^{N - 1} B_{j-1}^{N - 1}
+        - B_{i}^{N - 1} B_{j-1}^{N - 1}
+        - B_{i-1}^{N - 1} B_{j}^{N - 1}
+        + B_{i}^{N - 1} B_{j}^{N - 1} \ dx
+        \\
+        &= N^2 \int_{0}^{1} \alpha_{i-1, j-1} B_{i+j-2}^{2N-2} - (\alpha_{i,j-1} + \alpha_{i-1, j}) B_{i+j-1}^{2N - 2} + \alpha_{i,j} B_{i+j}^{2N - 2} \ dx \\
+        &= \frac{N^2}{2N - 1} \left(
+            \frac{\binom{N-1}{i-1}\binom{N-1}{j-1}}{\binom{2N - 2}{i + j - 2}}
+            - \frac{
+                \binom{N-1}{i}\binom{N-1}{j-1}
+                + \binom{N-1}{i-1}\binom{N-1}{j}
+            }{\binom{2N - 2}{i + j - 1}}
+            + \frac{\binom{N-1}{i}\binom{N-1}{j}}{\binom{2N - 2}{i + j}}
+        \right)
+    \end{align*}
+    This can likely be written much nicer, however I cannot be bothered to do that right now.
+\end{solution}
