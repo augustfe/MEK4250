@@ -1,3 +1,5 @@
+\section{Elliptic equations and the finite element method}
+
 \begin{exercise}
     Consider the problem $-u''(x) = x^2$ on the unit interval with $u(0) = u(1) = 0$.
     Let $u = \sum_{k = 1}^N u_k \sin{(\pi k x)}$ and $v = \sin{(\pi l x)}$ for $l = 1, \ldots, N$, for e.g.\ $N = 10, 20, 40$ and solve $(1.9)$.
@@ -29,7 +31,7 @@
         = \frac{(2 - \pi^2 i^2)(-1)^i- 2}{\pi^3 i^3}.
     \end{align*}
 
-    Setting up and solving the system for varying $N$ is then rather simples, implemented in \verb|exercise_1_1.py|.
+    Setting up and solving the system for varying $N$ is then rather simples, implemented in \verb|1_elliptic/ex1.py|.
     This gives the errors presented in Table~\ref{tab:1_1}, with the plotted solution in Figure~\ref{fig:1_1_curve}.
     \begin{table}[!h]
         \caption{Errors of approximations of $u$ for varying $N$, with sine basis functions.\label{tab:1_1}}
@@ -124,7 +126,7 @@
     \end{align*}
     This can likely be written much nicer, however I cannot be bothered to do that right now.
 
-    Opting to take the easy way out instead, and utilizing \verb|sympy| to solve the integrals, we can implement the solution in \verb|exercise_1_2.py|.
+    Opting to take the easy way out instead, and utilizing \verb|sympy| to solve the integrals, we can implement the solution in \verb|1_elliptic/ex2.py|.
     The errors are presented in Table~\ref{tab:1_2}.
     As we can read from the table, the polynomial approximation is exact for $N > 3$, which is expected as the Bernstein polynomials are exact for polynomials of degree $N$.
 

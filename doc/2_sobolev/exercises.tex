@@ -1,0 +1,42 @@
+\section{Crash course in Sobolev Spaces}
+
+\begin{exercise}
+    What is a norm?
+    Show that
+    \begin{equation*}
+        \lVert u \rVert_p = \left( \int_{0}^{1} \lvert u \rvert^p \ dx \right)^{1/p}
+    \end{equation*}
+    defines a norm.
+\end{exercise}
+
+\begin{solution}
+    Following the definition in Spaces by Tom Lindstrøm, a norm is a function $\lVert \cdot \rVert: V \to \mathbb{R}$, where $V$ is a vector space, such that
+    \begin{enumerate}[label=(\roman*)] % chktex 36
+        \item $\lVert \boldsymbol{u} \rVert \geq 0$ with equality if and only if $\boldsymbol{u} = \boldsymbol{0}$.
+
+        \item $\lVert \alpha \boldsymbol{u} \rVert = \lvert \alpha \rvert \lVert \boldsymbol{u} \rVert$ for all $\alpha \in \mathbb{R}$ and all $\boldsymbol{u} \in V$.
+
+        \item (Triangle Inequality for Norms) $\lVert \boldsymbol{u} + \boldsymbol{v} \rVert \leq \lVert \boldsymbol{u} \rVert + \lVert \boldsymbol{v} \rVert$ for all $\boldsymbol{u}, \boldsymbol{v} \in V$.
+    \end{enumerate}
+
+    Positivity is clear, as $\lvert u \rvert^p \geq 0$ for all $u \in L^p(0, 1)$.
+    The only way $\lVert u \rVert_p = 0$ is if $\lvert u \rvert^p = 0$.
+    Homogeneity is also clear, as
+    \begin{align*}
+        \lVert \alpha u \rVert_p &= \left( \int_{0}^{1} \lvert \alpha u \rvert^p \ dx \right)^{1/p} \\
+        &= \left( \int_{0}^{1} \lvert \alpha \rvert^p \lvert u \rvert^p \ dx \right)^{1/p} \\
+        &= \lvert \alpha \rvert \left( \int_{0}^{1} \lvert u \rvert^p \ dx \right)^{1/p} \\
+        &= \lvert \alpha \rvert \lVert u \rVert_p.
+    \end{align*}
+    The triangle inequality is a bit more involved, but we have
+    \begin{align*}
+        \lVert u + v \rVert_p^p &= \int_{0}^{1} \lvert u + v \rvert^p \ dx \\
+        &\leq \int_{0}^{1} \left( \lvert u \rvert + \lvert v \rvert \right)^p \ dx \\
+        &\leq \int_{0}^{1} \lvert u \rvert^p + \lvert v \rvert^p \ dx \\
+        &= \lVert u \rVert_p^p + \lVert v \rVert_p^p,
+    \end{align*}
+    which implies
+    \begin{equation*}
+        \lVert u + v \rVert_p \leq \left( \lVert u \rVert_p^p + \lVert u \rVert_p^p \right)^{1/p} \leq \lVert u \rVert_p + \lVert u \rVert_p.
+    \end{equation*}
+\end{solution}

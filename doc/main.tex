@@ -8,6 +8,17 @@
 \usepackage{subcaption}
 % \geometry{margin=1in}
 
+\usepackage{enumitem}
+
+\usepackage{hyperref}
+\usepackage{xcolor}
+\hypersetup{ % this is just my personal choice, feel free to change things
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black},
+}
+
 \newtheoremstyle{exerciseStyle}
 { } % Space above
 { } % Space below
@@ -37,7 +48,7 @@
     \small{Exercises for Finite Elements in Computational Mechanics}
 }
 \author{August Femtehjell}
-\date{January 24, 2025}
+\date{Spring 2025}
 
 \begin{document}
 
@@ -45,8 +56,13 @@
 
 \tableofcontents
 
-\section{Elliptic equations and the finite element method}
+\begin{abstract}
+    This document contains my solutions to the exercises for the course MEK4250--Finite Elements in Computational Mechanics, taught at the University of Oslo in the spring of 2025.
+    The code for everything, as well as this document, can be found at my GitHub repository: \url{https://github.com/augustfe/MEK4250}.
+\end{abstract}
 
-\input{1_elliptic/exercises.tex}
+\include{1_elliptic/exercises.tex}
+
+\include{2_sobolev/exercises.tex}
 
 \end{document}
