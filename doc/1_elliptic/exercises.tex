@@ -156,3 +156,34 @@
     \end{align*}
     As we have Dirichlet boundary conditions, we then set $C_1 = 0 = C_2$.
 \end{solution}
+
+\begin{exercise}
+    Consider the same problem as in the previous exercise, but with the finite element method in for example FEniCS, FEniCSx or Firedrake, using Lagrange method of order 1, 2 and 3.
+\end{exercise}
+
+\begin{solution}
+    For this exercise, I will be using FEniCSx to solve the problem.
+    The code is implemented in \verb|doc/1_elliptic/ex4.py|, with the resulting approximations in Figure~\ref{fig:ex4}.
+    \begin{figure}
+        \centering
+        \begin{subfigure}[b]{0.45\textwidth}
+            \includegraphics[width=\textwidth]{1_elliptic/exercise_1_4_N=5.pdf}
+            \caption{$N=5$.\label{fig:ex4_1}}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.45\textwidth}
+            \includegraphics[width=\textwidth]{1_elliptic/exercise_1_4_N=10.pdf}
+            \caption{$N=10$.\label{fig:ex4_2}}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.45\textwidth}
+            \includegraphics[width=\textwidth]{1_elliptic/exercise_1_4_N=20.pdf}
+            \caption{$N=20$.\label{fig:ex4_3}}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.45\textwidth}
+            \includegraphics[width=\textwidth]{1_elliptic/exercise_1_4_N=40.pdf}
+            \caption{$N=40$.\label{fig:ex4_4}}
+        \end{subfigure}
+        \caption{Approximation of $u$ with varying $N$ elements.\label{fig:ex4}}
+    \end{figure}
+\end{solution}
