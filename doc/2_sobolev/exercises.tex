@@ -40,3 +40,58 @@
         \lVert u + v \rVert_p \leq \left( \lVert u \rVert_p^p + \lVert u \rVert_p^p \right)^{1/p} \leq \lVert u \rVert_p + \lVert u \rVert_p.
     \end{equation*}
 \end{solution}
+
+\begin{exercise}
+    What is an inner product? Show that
+    \begin{equation*}
+        (u, v)_k = \sum_{i \leq k} \int_{\Omega} \left( \frac{\partial u}{\partial x} \right)^i \left( \frac{\partial v}{\partial x} \right)^i \ dx
+    \end{equation*}
+    defines an inner product.
+\end{exercise}
+
+\begin{solution}
+    Again, Spaces by Tom Lindstrøm defines an inner product as a function $(\cdot, \cdot): V \times V \to \mathbb{R}$, where $V$ is a vector space, such that
+    \begin{enumerate}[label=(\roman*)] % chktex 36
+        \item $(\boldsymbol{u}, \boldsymbol{v}) = (\boldsymbol{v}, \boldsymbol{u})$ for all $\boldsymbol{u}, \boldsymbol{v} \in V$.
+
+        \item $(\boldsymbol{u} + \boldsymbol{v}, \boldsymbol{w}) = (\boldsymbol{u}, \boldsymbol{w}) + (\boldsymbol{v}, \boldsymbol{w})$ for all $\boldsymbol{u}, \boldsymbol{v}, \boldsymbol{w} \in V$.
+
+        \item $(\alpha \boldsymbol{u}, \boldsymbol{v}) = \alpha (\boldsymbol{u}, \boldsymbol{v})$ for all $\alpha \in \mathbb{R}$, $\boldsymbol{u}, \boldsymbol{v} \in V$.
+
+        \item For all $\boldsymbol{u} \in V$, $(\boldsymbol{u}, \boldsymbol{u}) \geq 0$ with equality if and only if $\boldsymbol{u} = \boldsymbol{0}$.
+    \end{enumerate}
+
+    Symmetry is clear, as
+    \begin{equation*}
+        (u, v)_k
+        = \sum_{i \leq k} \int_{\Omega} \left( \frac{\partial u}{\partial x} \right)^i \left( \frac{\partial v}{\partial x} \right)^i \ dx
+        = \sum_{i \leq k} \int_{\Omega} \left( \frac{\partial v}{\partial x} \right)^i \left( \frac{\partial u}{\partial x} \right)^i \ dx
+        = (v, u)_k.
+    \end{equation*}
+    Linearity in the first argument is also satisfied, as
+    \begin{align*}
+        (u + v, w)_k
+        &= \sum_{i \leq k} \int_{\Omega} \left( \frac{\partial (u + v)}{\partial x} \right)^i \left( \frac{\partial w}{\partial x} \right)^i \ dx \\
+        &= \sum_{i \leq k} \int_{\Omega} \left( \frac{\partial u}{\partial x} + \frac{\partial v}{\partial x} \right)^i \left( \frac{\partial w}{\partial x} \right)^i \ dx \\
+        &= \sum_{i \leq k} \int_{\Omega} \left( \frac{\partial u}{\partial x} \right)^i \left( \frac{\partial w}{\partial x} \right)^i + \left( \frac{\partial v}{\partial x} \right)^i \left( \frac{\partial w}{\partial x} \right)^i \ dx \\
+        &= \sum_{i \leq k} \int_{\Omega} \left( \frac{\partial u}{\partial x} \right)^i \left( \frac{\partial w}{\partial x} \right)^i \ dx + \sum_{i \leq k} \int_{\Omega} \left( \frac{\partial v}{\partial x} \right)^i \left( \frac{\partial w}{\partial x} \right)^i \ dx \\
+        &= (u, w)_k + (v, w)_k.
+    \end{align*}
+    Homogeneity in the first argument is also satisfied, as
+    \begin{align*}
+        (\alpha u, v)_k
+        &= \sum_{i \leq k} \int_{\Omega} \left( \frac{\partial (\alpha u)}{\partial x} \right)^i \left( \frac{\partial v}{\partial x} \right)^i \ dx \\
+        &= \sum_{i \leq k} \int_{\Omega} \alpha \left( \frac{\partial u}{\partial x} \right)^i \left( \frac{\partial v}{\partial x} \right)^i \ dx \\
+        &= \alpha \sum_{i \leq k} \int_{\Omega} \left( \frac{\partial u}{\partial x} \right)^i \left( \frac{\partial v}{\partial x} \right)^i \ dx \\
+        &= \alpha (u, v)_k.
+    \end{align*}
+    Finally, positivity is also satisfied, as
+    \begin{equation*}
+        (u, u)_k
+        = \sum_{i \leq k} \int_{\Omega} \left( \frac{\partial u}{\partial x} \right)^i \left( \frac{\partial u}{\partial x} \right)^i \ dx
+        = \sum_{i \leq k} \int_{\Omega} \left( \frac{\partial^i u}{\partial x^i} \right)^{2} \ dx
+        \geq 0.
+    \end{equation*}
+    $(u, u)_k = 0$ only if $\frac{\partial^i u}{\partial x^i} = 0$ for all $i \leq k$, which implies $u = 0$.
+    $(u, v)_k$ is therefore an inner product.
+\end{solution}

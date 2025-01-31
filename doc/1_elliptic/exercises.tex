@@ -1,4 +1,4 @@
-\section{Elliptic equations and the finite element method}
+\section{A glimpse at the finite element method}
 
 \begin{exercise}
     Consider the problem $-u''(x) = x^2$ on the unit interval with $u(0) = u(1) = 0$.
@@ -33,7 +33,7 @@
 
     Setting up and solving the system for varying $N$ is then rather simples, implemented in \verb|1_elliptic/ex1.py|.
     This gives the errors presented in Table~\ref{tab:1_1}, with the plotted solution in Figure~\ref{fig:1_1_curve}.
-    \begin{table}[!h]
+    \begin{table}[!ht]
         \caption{Errors of approximations of $u$ for varying $N$, with sine basis functions.\label{tab:1_1}}
         \centering
         \begin{tabular}{lrr}
@@ -47,7 +47,7 @@
         \end{tabular}
     \end{table}
 
-    \begin{figure}[!h]
+    \begin{figure}[!ht]
         \centering
         \begin{subfigure}[b]{0.45\textwidth}
             \includegraphics[width=\textwidth]{1_elliptic/exercise_1_1.pdf}
@@ -130,7 +130,7 @@
     The errors are presented in Table~\ref{tab:1_2}.
     As we can read from the table, the polynomial approximation is exact for $N > 3$, which is expected as the Bernstein polynomials are exact for polynomials of degree $N$.
 
-    \begin{table}[!h]
+    \begin{table}[!ht]
         \centering
         \caption{Errors of approximations of $u$ for varying $N$, with Bernstein basis functions.\label{tab:1_2}}
         \begin{tabular}{cc}
