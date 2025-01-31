@@ -48,15 +48,15 @@
     \begin{figure}[!h]
         \centering
         \begin{subfigure}[b]{0.45\textwidth}
-            \includegraphics[width=\textwidth]{../figs/exercise_1_1.pdf}
+            \includegraphics[width=\textwidth]{1_elliptic/exercise_1_1.pdf}
             \caption{Approximated function.\label{fig:1_1_curve}}
         \end{subfigure}
         \hfill
         \begin{subfigure}[b]{0.45\textwidth}
-            \includegraphics[width=\textwidth]{../figs/exercise_1_1_coeffs.pdf}
+            \includegraphics[width=\textwidth]{1_elliptic/exercise_1_1_coeffs.pdf}
             \caption{Coefficients $|u_k|$.\label{fig:1_1_coeffs}}
         \end{subfigure}
-        % \includegraphics[width=0.7\textwidth]{../figs/exercise_1_1.pdf}
+        % \includegraphics[width=0.7\textwidth]{1_elliptic/exercise_1_1.pdf}
         \caption{Approximation of $u$ with $N = 40$ sine basis functions.\label{fig:1_1}}
     \end{figure}
 \end{solution}
@@ -123,4 +123,36 @@
         \right)
     \end{align*}
     This can likely be written much nicer, however I cannot be bothered to do that right now.
+
+    Opting to take the easy way out instead, and utilizing \verb|sympy| to solve the integrals, we can implement the solution in \verb|exercise_1_2.py|.
+    The errors are presented in Table~\ref{tab:1_2}.
+    As we can read from the table, the polynomial approximation is exact for $N > 3$, which is expected as the Bernstein polynomials are exact for polynomials of degree $N$.
+
+    \begin{table}[!h]
+        \centering
+        \caption{Errors of approximations of $u$ for varying $N$, with Bernstein basis functions.\label{tab:1_2}}
+        \begin{tabular}{cc}
+            \toprule
+            $N$ & $L_2$ \\
+            \midrule
+            2 & $\frac{\sqrt{1330}}{6300}$ \\
+            3 & $\frac{\sqrt{70}}{12600}$ \\
+            4--10 & 0 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{solution}
+
+\begin{exercise}
+    Consider the same problem as in the previous exercise, but with $ -u''(x) = \sin(k\pi x)$ for $k = 1$ and $k = 10$.
+\end{exercise}
+
+\begin{solution}
+    The approach for this is approximately the same, however we need to figure out the true solution in order to calculate the error.
+    \begin{align*}
+        u''(x) &= -\sin(k\pi x) \\
+        u'(x) &= \frac{1}{k\pi} \cos(k\pi x) + C_1 \\
+        u(x) &= \frac{1}{k^2\pi^2} \sin(k\pi x) + C_1 x + C_2.
+    \end{align*}
+    As we have Dirichlet boundary conditions, we then set $C_1 = 0 = C_2$.
 \end{solution}
