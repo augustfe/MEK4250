@@ -95,3 +95,131 @@
     $(u, u)_k = 0$ only if $\frac{\partial^i u}{\partial x^i} = 0$ for all $i \leq k$, which implies $u = 0$.
     $(u, v)_k$ is therefore an inner product.
 \end{solution}
+
+\begin{exercise}
+    Compute the $H^1$ and $L^2$ norms of a random function with values in $(0, 1)$ on meshes representing the unit interval with 10, 100, and 1000 cells.
+\end{exercise}
+
+\begin{solution}
+    As a random function, I choose the Bernstein polynomial $B_{5}^{10}$, which is given by
+    \begin{equation*}
+        B_{5}^{10}(x) = \binom{10}{5} x^5 (1 - x)^5.
+    \end{equation*}
+\end{solution}
+
+\begin{exercise}
+    Compute the $H^1$ and $L^2$ norms of the function $u(x) = \sin(k\pi x)$ on the unit interval analytically and compare with the values presented in Table 2.2.
+\end{exercise}
+
+\begin{solution}
+    The $L^2$ norm of $u(x) = \sin(k\pi x)$ is given by
+    \begin{align*}
+        \lVert u \rVert_2 &=\left( \int_{0}^{1} \sin^2(k\pi x) \ dx \right)^{1/2} \\
+        &=\left( \frac{1}{2} \int_{0}^{1} 1 - \cos(2k\pi x) \ dx \right)^{1/2} \\
+        &=\left( \frac{1}{2} \left[ x - \frac{1}{2k\pi} \sin(2k\pi x) \right]_0^1 \right)^{1/2} \\
+        &=\left( \frac{1}{2} \left( 1 - 0 \right) \right)^{1/2}
+        = \frac{\sqrt{2}}{2}.
+    \end{align*}
+    The $H^1$ norm is given by
+    \begin{align*}
+        \lVert u \rVert_1 &= \left( \int_{0}^{1} \left( \frac{\partial u}{\partial x} \right)^2 + u^2 \ dx \right)^{1/2} \\
+        &= \left( \int_{0}^{1} \left( k\pi \cos(k\pi x) \right)^2 + \sin^2(k\pi x) \ dx \right)^{1/2} \\
+        &= \left( \int_{0}^{1} (k\pi)^2 \cos^2(k\pi x) + \sin^2(k\pi x) \ dx \right)^{1/2} \\
+        &= \left( \int_{0}^{1} (k\pi)^2 \left( 1 - \sin^2(k\pi x) \right) + \sin^2(k\pi x) \ dx \right)^{1/2} \\
+        &= \left( \int_{0}^{1} (k\pi)^2 + (1 - (k\pi)^2) \sin^2(k\pi x) \ dx \right)^{1/2} \\
+        &= \left( (k\pi)^2 + (1 - (k\pi)^2) \int_{0}^{1} \sin^2(k\pi x) \ dx \right)^{1/2} \\
+        &= \left( (k\pi)^2 + (1 - (k\pi)^2) \frac{1}{2} \right)^{1/2}
+        = \sqrt{\frac{1 + (k\pi)^2}{2}}.
+    \end{align*}
+    The $H^1$ norm should then increase as $k$ increases, while the $L^2$ norm should remain constant, and we do indeed see this behaviour in Table 2.2.
+\end{solution}
+
+\begin{exercise}
+    Compute the $H^1$ and $L^2$ norms of the hat function in Picture 2.2.
+\end{exercise}
+
+\begin{solution}
+    The hat function in Picture 2.2 is given by
+    \begin{equation*}
+        u(x) =
+        \begin{cases}
+            \frac{x + 0.2}{0.2}, & x \in [-0.2, 0], \\
+            \frac{0.2 - x}{0.2}, & x \in [0, 0.2], \\
+            0, & \text{otherwise}.
+        \end{cases}
+    \end{equation*}
+    The $L^2$ norm is given by
+    \begin{align*}
+        \lVert u \rVert_2 &= \left( \int_{0}^{1} u^2 \ dx \right)^{1/2} \\
+        &= \left( \int_{-0.2}^{0} \left( \frac{x + 0.2}{0.2} \right)^2 \ dx + \int_{0}^{0.2} \left( \frac{0.2 - x}{0.2} \right)^2 \ dx \right)^{1/2} \\
+        &= \left( \int_{-0.2}^{0} \left( \frac{x^2 + 0.4x + 0.04}{0.04} \right) \ dx + \int_{0}^{0.2} \left( \frac{0.04 - 0.4x + x^2}{0.04} \right) \ dx \right)^{1/2} \\
+        &= \left(
+            \frac{1}{0.02} \int_{0}^{0.2} x^2 - 0.4x + 0.04 \ dx
+        \right)^{1/2} \\
+        &= \left(
+            \frac{1}{0.02} \left[ \frac{1}{3} x^3 - 0.2x^2 + 0.04x \right]_0^{0.2}
+        \right)^{1/2} \\
+        &= \left(
+            \frac{1}{0.02} \left( \frac{1}{3} \cdot 0.008 - 0.2 \cdot 0.04 + 0.04 \cdot 0.2 \right)
+        \right)^{1/2} \\
+        &= \sqrt{\frac{2}{15}}
+    \end{align*}
+
+    The derivative of $u$ is given by
+    \begin{equation*}
+        \frac{\partial u}{\partial x} =
+        \begin{cases}
+            5, & x \in [-0.2, 0], \\
+            -5, & x \in [0, 0.2], \\
+            0 & \text{otherwise}.
+        \end{cases}
+    \end{equation*}
+    Which gives the $H^1$ norm as
+    \begin{align*}
+        \lVert u \rVert_1 = \left( \lVert u \rVert_2^2 + \lvert u \rvert_1^2 \right)^{1/2}
+        = \left( \frac{2}{15} + 25 \frac{2}{5} \right)^{1/2}
+        = \sqrt{\frac{152}{15}}.
+    \end{align*}
+\end{solution}
+
+\begin{exercise}
+    Consider the following finite element function $u$ defined as
+    \begin{equation*}
+        u =
+        \begin{cases}
+            1, & x = 0.5, \\
+            \frac{1}{h} x - \frac{1}{h} (0.5 - h), & x = (0.5 - h, 0.5), \\
+            -\frac{1}{h} x + \frac{1}{h} (0.5 - h), & x = (0.5, 0.5 + h), \\
+            0, & \text{otherwise}.
+        \end{cases}
+    \end{equation*}
+    That is, it corresponds to the hat function in Picture 2.2, where $u(0.5) = 1$ and the hat function is zero everywhere in $(0, 0.5 - h)$ and $(0.5 + h, 1)$.
+    Compute the $H^1$ and $L^2$ norms of this function analytically, and the $L^2$, $H^1$, and $H^{-1}$ norms numerically for $h = 10$, $100$, and $1000$.
+\end{exercise}
+
+\begin{solution}
+    I'm beginning to start to regret not doing in generally in the first place\dots
+    Without further ado, lets compute the $L^2$ norm of $u$ analytically.
+    \begin{align*}
+        \lVert u \rVert_2 &= \left( \int_{0}^{1} u^2 \ dx \right)^{1/2} \\
+        &= \left( \int_{0.5 - h}^{0.5} \left( \frac{1}{h} x - \frac{1}{h} (0.5 - h) \right)^2 \ dx + \int_{0.5}^{0.5 + h} \left( -\frac{1}{h} x + \frac{1}{h} (0.5 - h) \right)^2 \ dx \right)^{1/2} \\
+        &= \left(
+            2 \int_{0.5 - h}^{0.5} \left( \frac{1}{h} x - \frac{1}{h} (0.5 - h) \right)^2 \ dx
+        \right)^{1/2} \\
+        &= \left(
+            \frac{2}{h^2} \int_{0.5 - h}^{0.5} x^2 - 2x(0.5 - h) + (0.5 - h)^2 \ dx
+        \right)^{1/2} \\
+        &= \left(
+            \frac{2}{h^2} \left[ \frac{1}{3} x^3 - (0.5 - h) x^2 + (0.5 - h)^2 x \right]_{0.5 - h}^{0.5}
+        \right)^{1/2} \\
+        &= \left(
+            \frac{2}{h^2} \left( \frac{1}{3} \cdot 0.125 - (0.5 - h) \cdot 0.25 + (0.5 - h)^2 \cdot 0.5 \right)
+        \right)^{1/2} \\
+        &= \left(
+            \frac{2}{h^2} \left( \frac{1}{24} - 0.125(0.5 - h) + 0.25(0.5 - h)^2 \right)
+        \right)^{1/2} \\
+        &= \left(
+            \frac{2}{h^2} \left( \frac{1}{24} - 0.125 \cdot 0.5 + 0.25 \cdot 0.25 \right)
+        \right)^{1/2} \\
+    \end{align*}
+\end{solution}
