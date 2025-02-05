@@ -52,7 +52,62 @@
 \begin{exercise}
     Let $\Omega = (0, 1)$, then for all functions in $H^1_0(\Omega)$, Poincaré's inequality states that
     \begin{equation*}
-        \lvert u \rvert_{L^2} \leq C \left\lvert \frac{\partial u}{\partial x} \right\rvert_{L^2}.
+        \norm{u}_{L^2} \leq C \norm*{\frac{\partial u}{\partial x}}_{L^2} = C \abs{u}_{H^1},
     \end{equation*}
     Use this inequality to show that the $H^1$ semi-norm defines a norm equivalent with the standard $H^1$ norm on $H^1_0(\Omega)$.
 \end{exercise}
+
+\begin{solution}
+    We can use Poincaré's inequality to show that the $H^1$ semi-norm defines a norm equivalent with the standard $H^1$ norm on $H^1_0(\Omega)$.
+    We have that
+    \begin{equation*}
+        \norm{u}_{H^1}
+        = \left( \norm{u}_{L^2}^2 + \abs{u}_{H^1}^2 \right)^{1/2}
+        \leq \left( C^2 \norm{\nabla u}_{L^2}^2 + \abs{u}_{H^1}^2 \right)^{1/2}
+        = \sqrt{1 + C^2} \abs{u}_{H^1},
+    \end{equation*}
+    showing that the $H^1$ norm is bounded above by the $H^1$ semi-norm.
+    We can also see that
+    \begin{equation*}
+        \abs{u}_{H^1}
+        \leq \left( \norm{u}_{L^2}^2 + \abs{u}_{H^1}^2 \right)^{1/2}
+        = \norm{u}_{H^1},
+    \end{equation*}
+    showing that the standard $H^1$ norm is bounded below by the $H^1$ semi-norm.
+    We have therefore shown that the $H^1$ semi-norm defines a norm equivalent with the standard $H^1$ norm on $H^1_0(\Omega)$.
+\end{solution}
+
+\begin{exercise}
+    Let $\Omega = (0, 1)$.
+    Show that
+    \begin{equation*}
+        a(u, v) = \int_\Omega \nabla u \cdot \nabla v \ dx
+    \end{equation*}
+    forms an inner product on $H^1_0(\Omega)$ equivalent with the standard $H^1$ inner product.
+\end{exercise}
+
+\begin{solution}
+    \textcolor{red!75}{What does it mean for an inner product to be equivalent with another inner product?}
+    \textcolor{blue!50}{Assuming it means that two inner products are equivalent if we can bound one by the other, and vice versa.}
+
+    \noindent
+    To show that $a(u, v)$ forms an inner product on $H^1_0(\Omega)$ equivalent with the standard $H^1$ inner product, we need to show that it is symmetric, positive definite, and linear in the first argument.
+    We clearly have
+    \begin{equation*}
+        a(u, v) = \int_\Omega \nabla u \cdot \nabla v \ dx = \int_\Omega \nabla v \cdot \nabla u \ dx = a(v, u),
+    \end{equation*}
+    and
+    \begin{align*}
+        a(\alpha u + \beta v, w)
+        &= \int_\Omega \nabla (\alpha u + \beta v) \cdot \nabla w \ dx \\
+        &= \int_\Omega \alpha \nabla u \cdot \nabla w + \beta \nabla v \cdot \nabla w \ dx \\
+        &= \alpha \int_\Omega \nabla u \cdot \nabla w \ dx + \beta \int_\Omega \nabla v \cdot \nabla w \ dx \\
+        &= \alpha a(u, w) + \beta a(v, w),
+    \end{align*}
+    meaning that we are only missing the positive definiteness.
+    We can see that
+    \begin{equation*}
+        a(u, u) = \int_\Omega \nabla u \cdot \nabla u \ dx = \int_\Omega \lvert \nabla u \rvert^2 \ dx = \abs{u}_{H^1}^2 \geq 0,
+    \end{equation*}
+    showing that $a(u, u)$ is positive definite, and therefore forms an inner product.
+\end{solution}

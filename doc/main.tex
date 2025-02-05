@@ -1,5 +1,6 @@
 \documentclass[a4paper,12pt]{article}
 \usepackage{amsmath, amsthm, amsfonts, amssymb}
+\usepackage{mathtools}
 \usepackage{microtype}
 \usepackage{geometry}
 \usepackage{booktabs}
@@ -42,6 +43,12 @@
 {\thmname{#1}\thmnumber{ #2}} % Theorem head spec (can be left empty, meaning `normal`)
 \theoremstyle{solutionStyle}
 \newtheorem{solution}{Solution}[section]
+
+% \providecommand{\abs}[1]{\left\lvert#1\right\rvert}
+% \providecommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}%
 
 \title{
     MEK4250\\
