@@ -4,7 +4,55 @@
     Let $\Omega = (0, 1)$.
     Show that
     \begin{equation*}
-        a(u, v) = \int_0^1 u \, v \ dx
+        a(u, v) = \int_\Omega u \, v \ dx
     \end{equation*}
     is a bilinear form.
+\end{exercise}
+
+\begin{solution}
+    To show that $a(u, v)$ is a bilinear form, we need to show that it is linear in both arguments.
+    We can firstly note that
+    \begin{equation*}
+        a(u, v) = \int_\Omega u \, v \ dx = \int_\Omega v \, u \ dx = a(v, u),
+    \end{equation*}
+    showing that $a(u, v)$ is symmetric.
+    We therefore only need to show that it is linear in one of the arguments.
+
+    Let $u, v, w \in V$ and $\alpha, \beta \in \mathbb{R}$.
+    Then
+    \begin{align*}
+        a(\alpha u + \beta v, w) &= \int_\Omega (\alpha u + \beta v) \, w \ dx \\
+        &= \int_\Omega \alpha u \, w + \beta v \, w \ dx \\
+        &= \alpha \int_\Omega u \, w \ dx + \beta \int_\Omega v \, w \ dx \\
+        &= \alpha a(u, w) + \beta a(v, w),
+    \end{align*}
+    showing that $a(u, v)$ is linear in the first argument, and therefore a bilinear form.
+\end{solution}
+
+\begin{exercise}
+    Let $\Omega = (0, 1)$.
+    Show that
+    \begin{equation*}
+        a(u, v) = \int_\Omega u \, v \ dx
+    \end{equation*}
+    forms an inner product.
+\end{exercise}
+
+\begin{solution}
+    To show that $a(u, v)$ forms an inner product, we need to show that it is symmetric, positive definite, and linear in the first argument.
+    We have already shown that $a(u, v)$ is symmetric and linear in the previous exercise.
+    We can also see that
+    \begin{equation*}
+        a(u, u) = \int_\Omega u \, u \ dx = \int_\Omega u^2 \ dx \geq 0,
+    \end{equation*}
+    showing that $a(u, u)$ is positive definite.
+    We have therefore shown that $a(u, v)$ forms an inner product.
+\end{solution}
+
+\begin{exercise}
+    Let $\Omega = (0, 1)$, then for all functions in $H^1_0(\Omega)$, Poincaré's inequality states that
+    \begin{equation*}
+        \lvert u \rvert_{L^2} \leq C \left\lvert \frac{\partial u}{\partial x} \right\rvert_{L^2}.
+    \end{equation*}
+    Use this inequality to show that the $H^1$ semi-norm defines a norm equivalent with the standard $H^1$ norm on $H^1_0(\Omega)$.
 \end{exercise}
