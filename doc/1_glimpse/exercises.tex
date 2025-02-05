@@ -31,7 +31,7 @@
         = \frac{(2 - \pi^2 i^2)(-1)^i- 2}{\pi^3 i^3}.
     \end{align*}
 
-    Setting up and solving the system for varying $N$ is then rather simples, implemented in \verb|1_elliptic/ex1.py|.
+    Setting up and solving the system for varying $N$ is then rather simples, implemented in \verb|1_glimpse/ex1.py|.
     This gives the errors presented in Table~\ref{tab:1_1}, with the plotted solution in Figure~\ref{fig:1_1_curve}.
     \begin{table}[!ht]
         \caption{Errors of approximations of $u$ for varying $N$, with sine basis functions.\label{tab:1_1}}
@@ -50,15 +50,15 @@
     \begin{figure}[!ht]
         \centering
         \begin{subfigure}[b]{0.45\textwidth}
-            \includegraphics[width=\textwidth]{1_elliptic/exercise_1_1.pdf}
+            \includegraphics[width=\textwidth]{1_glimpse/exercise_1_1.pdf}
             \caption{Approximated function.\label{fig:1_1_curve}}
         \end{subfigure}
         \hfill
         \begin{subfigure}[b]{0.45\textwidth}
-            \includegraphics[width=\textwidth]{1_elliptic/exercise_1_1_coeffs.pdf}
+            \includegraphics[width=\textwidth]{1_glimpse/exercise_1_1_coeffs.pdf}
             \caption{Coefficients $|u_k|$.\label{fig:1_1_coeffs}}
         \end{subfigure}
-        % \includegraphics[width=0.7\textwidth]{1_elliptic/exercise_1_1.pdf}
+        % \includegraphics[width=0.7\textwidth]{1_glimpse/exercise_1_1.pdf}
         \caption{Approximation of $u$ with $N = 40$ sine basis functions.\label{fig:1_1}}
     \end{figure}
 \end{solution}
@@ -126,7 +126,7 @@
     \end{align*}
     This can likely be written much nicer, however I cannot be bothered to do that right now.
 
-    Opting to take the easy way out instead, and utilizing \verb|sympy| to solve the integrals, we can implement the solution in \verb|1_elliptic/ex2.py|.
+    Opting to take the easy way out instead, and utilizing \verb|sympy| to solve the integrals, we can implement the solution in \verb|1_glimpse/ex2.py|.
     The errors are presented in Table~\ref{tab:1_2}.
     As we can read from the table, the polynomial approximation is exact for $N > 3$, which is expected as the Bernstein polynomials are exact for polynomials of degree $N$.
 
@@ -165,25 +165,25 @@
 
 \begin{solution}
     For this exercise, I will be using FEniCSx to solve the problem.
-    The code is implemented in \verb|doc/1_elliptic/ex4.py|, with the resulting approximations in Figure~\ref{fig:ex4}.
+    The code is implemented in \verb|doc/1_glimpse/ex4.py|, with the resulting approximations in Figure~\ref{fig:ex4}.
     \begin{figure}
         \centering
         \begin{subfigure}[b]{0.45\textwidth}
-            \includegraphics[width=\textwidth]{1_elliptic/exercise_1_4_N=5.pdf}
+            \includegraphics[width=\textwidth]{1_glimpse/exercise_1_4_N=5.pdf}
             \caption{$N=5$.\label{fig:ex4_1}}
         \end{subfigure}
         \hfill
         \begin{subfigure}[b]{0.45\textwidth}
-            \includegraphics[width=\textwidth]{1_elliptic/exercise_1_4_N=10.pdf}
+            \includegraphics[width=\textwidth]{1_glimpse/exercise_1_4_N=10.pdf}
             \caption{$N=10$.\label{fig:ex4_2}}
         \end{subfigure}
         \begin{subfigure}[b]{0.45\textwidth}
-            \includegraphics[width=\textwidth]{1_elliptic/exercise_1_4_N=20.pdf}
+            \includegraphics[width=\textwidth]{1_glimpse/exercise_1_4_N=20.pdf}
             \caption{$N=20$.\label{fig:ex4_3}}
         \end{subfigure}
         \hfill
         \begin{subfigure}[b]{0.45\textwidth}
-            \includegraphics[width=\textwidth]{1_elliptic/exercise_1_4_N=40.pdf}
+            \includegraphics[width=\textwidth]{1_glimpse/exercise_1_4_N=40.pdf}
             \caption{$N=40$.\label{fig:ex4_4}}
         \end{subfigure}
         \caption{Approximation of $u$ with varying $N$ elements.\label{fig:ex4}}
