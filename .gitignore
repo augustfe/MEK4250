@@ -29,6 +29,7 @@ ipython_config.py
 *.cb
 *.cb2
 .*.lb
+doc/main.pdf
 
 ## Intermediate documents:
 *.dvi
