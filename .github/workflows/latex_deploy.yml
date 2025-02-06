@@ -26,7 +26,6 @@ jobs:
           name: PDF
           path: out/main.pdf
       - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@3.6.2
+        uses: JamesIves/github-pages-deploy-action@4
         with:
-          SINGLE_COMMIT: true
-          FOLDER: out
+          folder: out
