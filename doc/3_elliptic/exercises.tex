@@ -110,4 +110,61 @@
         a(u, u) = \int_\Omega \nabla u \cdot \nabla u \ dx = \int_\Omega \lvert \nabla u \rvert^2 \ dx = \abs{u}_{H^1}^2 \geq 0,
     \end{equation*}
     showing that $a(u, u)$ is positive definite, and therefore forms an inner product.
+
+    $a(u, v)$ induces the $H^1$ semi-norm, which we have already shown to be equivalent with the standard $H^1$ norm.
+    We have therefore shown that $a(u, v)$ forms an inner product on $H^1_0(\Omega)$ equivalent with the standard $H^1$ inner product.
 \end{solution}
+
+\begin{exercise}
+    Let $\Omega = (0, 1)$.
+    Show that
+    \begin{equation*}
+        a(u, v) = \int_\Omega (k \nabla u) \cdot \nabla v \ dx
+    \end{equation*}
+    forms an inner product on $H^1_0(\Omega)$ given that $k \in \mathbb{R}^{n \times n}$ is strictly positive and bounded.
+    The inner product is equivalent with the standard $H^1_0(\Omega)$ inner product.
+\end{exercise}
+
+\begin{solution}
+    We begin by showing that $a(u, v)$ is symmetric.
+    We have that
+    \begin{align*}
+        a(u, v)
+        &= \int_\Omega (k \nabla u) \cdot \nabla v \ dx \\
+        &= \int_\Omega (\nabla u)^T k^T \nabla v \ dx \\
+        &= \int_\Omega \left( (\nabla u)^T k^T \nabla v \right)^T \ dx \\
+        &= \int_\Omega (\nabla v)^T k \nabla u \ dx \\
+        &= \int_\Omega k^T \nabla v \cdot \nabla u \ dx \\
+        &= a(v, u),
+    \end{align*}
+    assuming that it is implied that $k$ is symmetric.
+    Next, we show that $a(u, v)$ is linear in the first argument.
+    Let $u, v, w \in H^1_0(\Omega)$ and $\alpha, \beta \in \mathbb{R}$.
+    Then
+    \begin{align*}
+        a(\alpha u + \beta v, w)
+        &= \int_\Omega (k \nabla (\alpha u + \beta v)) \cdot \nabla w \ dx \\
+        &= \int_\Omega (k \alpha \nabla u + k \beta \nabla v) \cdot \nabla w \ dx \\
+        &= \alpha \int_\Omega k \nabla u \cdot \nabla w \ dx + \beta \int_\Omega k \nabla v \cdot \nabla w \ dx \\
+        &= \alpha a(u, w) + \beta a(v, w),
+    \end{align*}
+    showing that $a(u, v)$ is linear in the first argument.
+    We are then just missing the positive definiteness.
+    We can see that
+    \begin{equation*}
+        a(u, u) = \int_\Omega (k \nabla u) \cdot \nabla u \ dx = \int_\Omega (\nabla u)^T k^T \nabla u \ dx \geq \int_\Omega k_0 \abs{\nabla u}^2 \ dx \geq 0,
+    \end{equation*}
+    using that $k$ is strictly positive and bounded by $k_0$.
+
+    Noting that
+    \begin{equation*}
+        \int_\Omega k_0 \nabla u \cdot \nabla u \ dx
+        \leq \int_\Omega (k \nabla u) \cdot \nabla u \ dx
+        \leq \int_\Omega k_1 \nabla u \cdot \nabla u \ dx,
+    \end{equation*}
+    we see that the induced norm is equivalent with the $H^1$ semi-norm, and thus also the standard $H^1_0(\Omega)$ norm.
+\end{solution}
+
+\begin{exercise}
+    Make a Python code that defines a Lagrange element of arbitrary order on the reference triangle.
+\end{exercise}
