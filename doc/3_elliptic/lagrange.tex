@@ -1,0 +1,23 @@
+
+\def\NTri{4}
+\usetikzlibrary{calc}
+\begin{tikzpicture}[scale=2]
+    \foreach \n in {1, ..., \NTri} {
+        \begin{scope}[xshift=\n*2 cm]
+
+            \coordinate (A) at (0, 1);
+            \coordinate (B) at (0, 0);
+            \coordinate (C) at (1, 0);
+
+            \draw[myblue, ultra thick] (A) -- (B) -- (C) -- cycle;
+
+            \foreach \i in {0, ..., \n} {
+                \foreach \j in {0, ..., \i} {
+                    % Draw a point for each Lagrange node
+                    \coordinate (P) at ($(A) - \i/(\n)*(A) + \j/(\n)*(C)$);
+                    \fill[mypurple] (P) circle (1.2pt);
+                }
+            }
+        \end{scope}
+    }
+\end{tikzpicture}

@@ -168,3 +168,36 @@
 \begin{exercise}
     Make a Python code that defines a Lagrange element of arbitrary order on the reference triangle.
 \end{exercise}
+
+\begin{solution}
+    In order to get a better grasp of the Lagrange elements, an illustration of the elements of order up to 4 on the reference triangle is shown in Figure~\ref{fig:lagrange_elements}, with the corresponding nodes marked in purple.
+
+    \begin{figure}[!h]
+        \centering
+        \input{3_elliptic/lagrange.tex}
+        \caption{Lagrange elements of order up to 4 on the reference triangle.\label{fig:lagrange_elements}}
+    \end{figure}
+
+    In order to find the Lagrange basis of order $n$, we seek to find the coefficients $a_{ij}$ such that
+    \begin{equation*}
+        \ell_i = \sum_{j} a_{ij} \phi_j,
+    \end{equation*}
+    where $\ell_i$ is the $i$th Lagrange basis function, and $\phi_j$ is the monomials, satisfying
+    \begin{equation*}
+        \ell_i(x_j) = \delta_{ij}.
+    \end{equation*}
+    We do this by solving
+    \begin{equation*}
+        \ell_i(x_j) = \sum_{k} a_{ik} \phi_k(x_j) = \delta_{ij},
+    \end{equation*}
+    or in matrix form
+    \begin{equation*}
+        A \Phi = I,
+    \end{equation*}
+    where $A$ is the matrix of coefficients, $\Phi$ is the matrix of monomials at the lagrange nodes, and $I$ is the identity matrix.
+    From this, we can find the coefficients by
+    \begin{equation*}
+        A = \Phi^{-1}.
+    \end{equation*}
+    The Python code for this is available in \verb|3_elliptic/lagrange_elements.py|
+\end{solution}
