@@ -28,17 +28,8 @@
         &= \lvert \alpha \rvert \left( \int_{0}^{1} \lvert u \rvert^p \ dx \right)^{1/p} \\
         &= \lvert \alpha \rvert \lVert u \rVert_p.
     \end{align*}
-    The triangle inequality is a bit more involved, but we have
-    \begin{align*}
-        \lVert u + v \rVert_p^p &= \int_{0}^{1} \lvert u + v \rvert^p \ dx \\
-        &\leq \int_{0}^{1} \left( \lvert u \rvert + \lvert v \rvert \right)^p \ dx \\
-        &\leq \int_{0}^{1} \lvert u \rvert^p + \lvert v \rvert^p \ dx \quad \textcolor{red}{\text{This is shady}} \\
-        &= \lVert u \rVert_p^p + \lVert v \rVert_p^p,
-    \end{align*}
-    which implies
-    \begin{equation*}
-        \lVert u + v \rVert_p \leq \left( \lVert u \rVert_p^p + \lVert u \rVert_p^p \right)^{1/p} \leq \lVert u \rVert_p + \lVert u \rVert_p.
-    \end{equation*}
+    The triangle inequality is a bit more involved, and not yet solved.
+    Likely requires something like Minkowski's inequality.
 \end{solution}
 
 \begin{exercise}
