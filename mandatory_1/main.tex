@@ -1,0 +1,105 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{amsmath, amsthm, amsfonts, amssymb}
+\usepackage{mathtools}
+\usepackage{microtype}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{caption}
+\usepackage{subcaption}
+% \geometry{margin=1in}
+
+\usepackage{enumitem}
+
+\usepackage{hyperref}
+\usepackage{xcolor}
+\hypersetup{ % this is just my personal choice, feel free to change things
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black},
+}
+
+\colorlet{myred}{red!20}
+\colorlet{myblue}{blue!20}
+\colorlet{mypurple}{purple!40}
+\colorlet{myorange}{orange!20}
+\colorlet{myteal}{teal!35}
+
+% Your existing style for exercises, copied from your code:
+\newtheoremstyle{exerciseStyle}%
+{}{}%
+{\normalfont}%
+{}%
+{\bfseries}%
+{}%
+{ }%
+{\thmname{#1}\thmnumber{ #2}} % The heading "Exercise 4.6", etc.
+
+\theoremstyle{exerciseStyle}
+\newtheorem{exerciseTemp}{Exercise}
+% This "exerciseTemp" environment has a normal counter
+% but we will override that counter each time we begin an exercise.
+
+% Now define the "exercise" environment that takes a *manual* label
+\NewDocumentEnvironment{exercise}{m}{%
+    % 1. Reset the counter so we start from 0
+    % 2. Define \theexerciseTemp to be whatever was passed in, e.g. "4.6"
+    \setcounter{exerciseTemp}{0}%
+    \renewcommand{\theexerciseTemp}{#1}%
+    \begin{exerciseTemp}%
+    }{%
+    \end{exerciseTemp}
+}
+
+% Your existing style for exercises, copied from your code:
+\newtheoremstyle{solutionStyle}%
+{}{}%
+{\normalfont}%
+{}%
+{\bfseries}%
+{}%
+{ }%
+{\thmname{#1}\thmnumber{ #2}} % The heading "Solution 4.6", etc.
+
+\theoremstyle{solutionStyle}
+\newtheorem{solutionTemp}{Solution}
+% This "solutionTemp" environment has a normal counter
+% but we will override that counter each time we begin an solution.
+
+% Now define the "solution" environment that takes a *manual* label
+\NewDocumentEnvironment{solution}{m}{%
+    % 1. Reset the counter so we start from 0
+    % 2. Define \thesolutionTemp to be whatever was passed in, e.g. "4.6"
+    \setcounter{solutionTemp}{0}%
+    \renewcommand{\thesolutionTemp}{#1}%
+    \begin{solutionTemp}%
+    }{%
+    \end{solutionTemp}
+}
+
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}%
+
+\title{
+    MEK4250\\
+    \small{First mandatory exercise}
+}
+\author{August Femtehjell}
+\date{Spring 2025}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\begin{abstract}
+    This document contains my solutions to the exercises for the course MEK4250--Finite Elements in Computational Mechanics, taught at the University of Oslo in the spring of 2025.
+    The code for everything, as well as this document, can be found at my GitHub repository: \url{https://github.com/augustfe/MEK4250}.
+\end{abstract}
+
+\include{exercises}
+
+\end{document}
