@@ -5,8 +5,8 @@ from lagrange_element import compute_nodes, lagrange_basis
 x, y = sp.symbols("x y")
 
 
-@pytest.mark.parametrize("n", [1, 2, 3, 4])
-def test_lagrange(n):
+@pytest.mark.parametrize("n", [1, 2, 3, 4, 5])
+def test_lagrange(n) -> None:
     basis = lagrange_basis(n)
     nodes = compute_nodes(n)
 

@@ -77,15 +77,12 @@ def lagrange_coeffs(n: int) -> sp.Matrix:
     len_basis = len(m_basis)
 
     A = sp.zeros(len_basis, len_basis)
-    # Don't need to use B, as it is the identity matrix
-    # B = sp.eye(len_basis)
 
     for i, (x_i, y_i) in enumerate(nodes):
         for j, phi in enumerate(m_basis):
             A[i, j] = phi.subs({x: x_i, y: y_i})
 
-    C = A.inv()  # @ B
-    return C
+    return A.inv()
 
 
 def lagrange_basis(n: int) -> list[sp.Expr]:
@@ -112,6 +109,6 @@ def lagrange_basis(n: int) -> list[sp.Expr]:
 if __name__ == "__main__":
     n = 2
     nodes = compute_nodes(n)
-    # plot_nodes(nodes)
-    print(nodes)
+    plot_nodes(nodes)
+
     sp.pprint(lagrange_basis(2))
