@@ -1,0 +1,44 @@
+\section{Discretization of a convection-diffusion problem}
+
+\begin{exercise}
+    Show that the matrix obtained from a central difference scheme applied to the operator $L u = u_x$ is skew-symmetric.
+    Furthermore, show that the matrix obtained by linear continuous Lagrange elements are also skew-symmetric.
+    Remark: The matrix is only skew-symmetric in the interior of the domain, not at the boundary.
+\end{exercise}
+
+\begin{solution}
+    We consider the operator $L u = u_x$.
+    The central difference scheme applied to this operator is
+    \begin{equation*}
+        L_h u = \frac{u_{i+1} - u_{i-1}}{2h},
+    \end{equation*}
+    where $h$ is the mesh size.
+    The matrix representation of this operator is, considering the interior points only,
+    \begin{equation*}
+        L_h = \frac{1}{2h}
+        \begin{bmatrix}
+            -1 & 0 & 1 \\
+            & -1 & 0 & 1 \\
+            && \ddots & \ddots & \ddots \\
+            &&& -1 & 0 & 1
+        \end{bmatrix}.
+    \end{equation*}
+    This matrix is skew-symmetric, as can be seen by transposing it and negating it, ignoring the mismatched dimension of the matrix caused by ignoring the boundaries.
+
+    The matrix $A$ for describing $L u = u_x$ using linear continuous Lagrange elements is defined by the elements
+    \begin{equation*}
+        A_{ij} = \int_{\Omega} \phi_i' \phi_j \, dx.
+    \end{equation*}
+    As the basis functions are linear, the derivative of the basis functions are constant.
+    If there is no overlap between the basis functions, the integral is zero, and we clearly have $A_{ij} = 0 = -A_{ji}$.
+    Suppose then that they do contain some overlap, on an interval $[x_l, x_u]$.
+    Then we have
+    \begin{equation*}
+        A_{ij} = \int_{\Omega} \phi_i' \phi_j \, dx = \int_{x_l}^{x_u} \phi_i' \phi_j \, dx = -\int_{x_l}^{x_u} \phi_i \phi_j' \, dx + \left[ \phi_i \phi_j \right]_{x_l}^{x_u} = -A_{ji} + \left[ \phi_i \phi_j \right]_{x_l}^{x_u}.
+    \end{equation*}
+    Now, as the exercise hints to, for the interior points, the boundary term is zero, and we have $A_{ij} = -A_{ji}$.
+\end{solution}
+
+\begin{exercise}
+    Estimate numerically the constant in Cea’s lemma for various $\alpha$ and $h$ for the Example 4.1.
+\end{exercise}
