@@ -42,3 +42,53 @@
 \begin{exercise}
     Estimate numerically the constant in Cea’s lemma for various $\alpha$ and $h$ for the Example 4.1.
 \end{exercise}
+
+\begin{solution}
+    Cea's lemma states:
+    \begin{theorem}[Cea's lemma]
+        Suppose the conditions for Lax-Milgram's theorem are satisfied and that we solve the linear problem of finding $u_h \in V_{h, g}$ such that
+        \begin{equation*}
+            a(u_h, v_h) = L(v_h) \quad \forall v_h \in V_{h, 0}
+        \end{equation*}
+        on a finite element space of order $t$.
+        Then,
+        \begin{equation*}
+            \norm{u - u_h}_V
+            \leq
+            C_1 h^t \norm{u}_{t+1}.
+        \end{equation*}
+        Here $C_1 = \frac{CB}{\alpha}$, where $B$ comes from the approximation property and $\alpha$ and $C$ are the constants of Lax-Milgram's theorem.
+    \end{theorem}
+
+    I'm unsure about how to bound the constant from above, but we can at least bound it from below by
+    \begin{equation*}
+        C_1 \geq \frac{\norm{u - u_h}_V}{\norm{u}_{t+1} h^t}.
+    \end{equation*}
+    In example 4.1 we consider the 1D convection diffusion problem, with $w = 1$, defined by
+    \begin{align*}
+        -u_x - \mu u_{xx} &= 0, \\
+        u(0) &= 0, \\
+        u(1) &= 1.
+    \end{align*}
+    The analytical solution to this is
+    \begin{equation*}
+        u(x) = \frac{e^{-x / \mu} - 1}{e^{-1 / \mu} - 1}.
+    \end{equation*}
+
+    This leads to the following estimates for $C_1$ for varying $\mu$ and $h$, as shown in Table~\ref{tab:cea}.
+
+    \begin{table}[h]
+        \centering
+        \caption{Estimates of $C_1$ for various $\mu$ and $h$.\label{tab:cea}}
+        \begin{tabular}{lrrr}
+            \toprule
+            $h \backslash \mu$ & 0.100 & 0.010 & 0.001 \\
+            \midrule
+            0.1000 & 0.525379 & 15.970240 & 149.093342 \\
+            0.0100 & 0.054700 & 5.622143 & 162.507563 \\
+            0.0010 & 0.005472 & 0.583342 & 56.752388 \\
+            0.0001 & 0.000547 & 0.058356 & 5.884473 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{solution}

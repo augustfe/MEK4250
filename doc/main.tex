@@ -27,6 +27,33 @@
 \colorlet{myorange}{orange!20}
 \colorlet{myteal}{teal!35}
 
+% 1. Define a ‘breaktheorem’ style that:
+%    - Uses bold for the theorem heading,
+%    - Puts (number + optional note) on the *same line*,
+%    - Forces a line-break before the body text.
+\makeatletter
+\newtheoremstyle{breaktheorem}%
+{\topsep}{\topsep}%   % Above/below space
+{
+    \addtolength{\@totalleftmargin}{3.5em}
+    \addtolength{\linewidth}{-3.5em}
+    \parshape 1 3.5em \linewidth % chktex 1
+    \itshape
+}% body font
+{}%                   % Indent
+{\bfseries}%          % Head font
+{.}%                  % Punctuation after theorem head
+{\newline}%           % Space (or line break) after theorem head
+{\thmname{#1} \thmnumber{#2} \textit{\thmnote{#3}}}
+\makeatother
+%   #1 = Theorem name ("Theorem")
+%   #2 = Theorem number ("4.3")
+%   #3 = The optional note (e.g., "Cea's lemma")
+
+% 2. Tell amsthm to use this style for Theorem.
+\theoremstyle{breaktheorem}
+\newtheorem{theorem}{Theorem}[section]
+
 \newtheoremstyle{exerciseStyle}
 { } % Space above
 { } % Space below
