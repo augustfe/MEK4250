@@ -4,6 +4,157 @@
     Repeat the exercise with $L_1 = x u_x$.
 \end{exercise}
 
-\begin{solution}{4.6}
+\begin{comment}
+    \begin{solution}{4.6}
+    For this exercise, I'm assuming that the domain is $[0, 1]$.
+    For $L_1$, the eigenfunctions are of the from
+    \begin{equation}
+        u(x) = C e^{\lambda x},
+    \end{equation}
+    as we then have
+    \begin{equation}
+        L_1 C e^{\lambda x} = \frac{\partial}{\partial x} C e^{\lambda x} = C \lambda e^{\lambda x}.
+    \end{equation}
+    For the boundary conditions, we have $u(0) = u(1) = 0$, which gives us
+    \begin{equation}
+        C e^{\lambda \cdot 0} = C e^0 = C
+    \end{equation}
+    and
+    \begin{equation}
+        e^{\lambda \cdot 1} = C e^{\lambda},
+    \end{equation}
+    which gives us the trivial solution $C = 0$ and $u(x) = 0$, for all $\lambda$.
 
+    For $L_2$, we consider first the operator $\frac{\partial^2}{\partial x^2}$.
+    The eigenfunctions of this operator are loosely of the form
+    \begin{equation}
+        u(x) = e^{i x},
+    \end{equation}
+    as then
+    \begin{equation}
+        \frac{\partial^2}{\partial x^2} e^{i x} = -i^2 e^{i x} = -e^{i x}.
+    \end{equation}
+    In order to get the factor $\alpha$, we need to adjust the exponent such that we have
+    \begin{equation}
+        u(x) = e^{i \sqrt{\alpha} x}.
+    \end{equation}
+\end{solution}
+\end{comment}
+
+\begin{solution}{4.6}
+    For this exercise, let the domain be $[0, 1]$ for simplicity.
+    For the first part of the exercise, we are seeking solutions to
+    \begin{equation}
+        u_x = \lambda u,
+    \end{equation}
+    for which the solutions are
+    \begin{equation}
+        u(x) = C e^{\lambda x}.
+    \end{equation}
+    The boundary conditions are $u(0) = u(1) = 0$, which gives us that $C = 0$, and thus $u(x) = 0$ for all $\lambda$.
+
+    For the second part of the exercise, we are seeking solutions to
+    \begin{equation}
+        -\alpha u_{xx} = \lambda u,
+    \end{equation}
+    or equivalently
+    \begin{equation}
+        -u_{xx} = \tfrac{\lambda}{\alpha} u.
+    \end{equation}
+    As the second derivative is a scaled version of the function itself, with opposite sign, we can guess that the solutions are of the form
+    \begin{equation}
+        u(x) = \sin(C x)
+        \quad \text{or} \quad
+        u(x) = \cos(C x).
+    \end{equation}
+    As the boundary conditions are homogeneous Dirichlet conditions, we can see that the sine function is the only one that satisfies the boundary conditions, for $C = k \pi$, $k = 0, 1, 2, \ldots$.
+    Taking the double derivative of the sine function, we get
+    \begin{equation}
+        -u_{xx} = (k \pi)^2 \sin(k \pi x),
+    \end{equation}
+    and hence
+    \begin{equation}
+        \tfrac{\lambda}{\alpha} = (k \pi)^2 \implies \lambda = \alpha (k \pi)^2.
+    \end{equation}
+    As $\alpha > 0$, we see that the eigenvalues are positive and real for $L_2$, for $k \geq 1$.
+
+    For $L_3$, we are looking for a solution
+    \begin{equation}
+        u_x - \alpha u_{xx} = \lambda u.
+    \end{equation}
+    Recalling back to videregående ODE solving, we can guess that the solution is of the form
+    \begin{equation}
+        u(x) = e^{rx},
+    \end{equation}
+    which gives the equation
+    \begin{equation}
+        -\alpha r^2 + r - \lambda = 0.
+    \end{equation}
+    Recalling the abc-formula, we then have the solutions
+    \begin{align}
+        r &=
+        \frac{-1 \pm \sqrt{1 - 4 \alpha \lambda}}{-2 \alpha}
+        = \frac{1 \mp \sqrt{1 - 4 \alpha \lambda}}{2 \alpha}.
+    \end{align}
+    For $1 - 4 \alpha \lambda > 0$, we have two real roots, however they only permit the trivial solution.
+    For $1 - 4 \alpha \lambda = 0$, we have one real root, $r = 1 / 2\alpha$, which gives us a solution of the form
+    \begin{equation}
+        (C_1 + C_2 x) e^{x / 2\alpha},
+    \end{equation}
+    however for the boundary conditions, we must have $C_1 = C_2 = 0$, and hence the only solution is the trivial one.
+
+    Finally, for $1 - 4 \alpha \lambda < 0$, we have two complex roots
+    \begin{equation}
+        r = \frac{1}{2\alpha} \pm i \frac{\sqrt{4 \alpha \lambda - 1}}{2\alpha},
+    \end{equation}
+    which gives us a solution of the form
+    \begin{equation}
+        e^{x / 2\alpha} \left(
+            C_1 \cos\left(\frac{\sqrt{4 \alpha \lambda - 1}}{2\alpha} x\right)
+            + C_2 \sin\left(\frac{\sqrt{4 \alpha \lambda - 1}}{2\alpha} x\right)
+        \right).
+    \end{equation}
+    At $x = 0$, we have
+    \begin{equation}
+        e^{0} \left(
+            C_1 \cos\left(\frac{\sqrt{4 \alpha \lambda - 1}}{2\alpha} \cdot 0 \right)
+            + C_2 \sin\left(\frac{\sqrt{4 \alpha \lambda - 1}}{2\alpha} \cdot 0 \right)
+        \right),
+    \end{equation}
+    such that we must have $C_1 = 0$.
+    At $x = 1$, we have
+    \begin{equation}
+        e^{1 / 2\alpha} \left( C_2 \sin\left(\frac{\sqrt{4 \alpha \lambda - 1}}{2\alpha}\right) \right) = 0,
+    \end{equation}
+    which is valid when $\frac{\sqrt{4 \alpha \lambda - 1}}{2\alpha} = k \pi$, $k = 0, 1, 2, \ldots$.
+    This gives us the eigenvalues
+    \begin{align*}
+        \frac{\sqrt{4 \alpha \lambda - 1}}{2\alpha} &= k \pi \\
+        4 \alpha \lambda - 1 &= (2\alpha k \pi)^2 \\
+        \lambda &= \frac{(2 \alpha k \pi)^2 + 1}{4 \alpha} \\
+        \lambda &= \alpha (k \pi)^2 + \frac{1}{4 \alpha},
+    \end{align*}
+    which are always positive and real.
+
+    Changing $L_1$ to $x u_x$, we have the equation
+    \begin{equation}
+        x u_x = \lambda u \implies u_x = \frac{\lambda}{x} u.
+    \end{equation}
+    As far as I can see, the monomials satisfy the equation, as
+    \begin{equation}
+        u_x = \frac{\partial}{\partial x} x^n = n x^{n - 1} = \frac{n}{x} x^n = \frac{n}{x} u.
+    \end{equation}
+    Looking even closer, we see that we do not even need to restrict ourselves the monomials, but can rather have
+    \begin{equation}
+        u(x) = C x^\lambda,
+        \quad \text{for }
+        \lambda \in \mathbb{R}.
+    \end{equation}
+    At $x = 0$ we have $u(0) = 0$, while we at $x = 1$ have
+    \begin{equation}
+        u(1) = C,
+    \end{equation}
+    and as such we sadly only have the trivial solution $u(x) = 0$ for all $\lambda$.
+
+    I have no clue as to how to find the eigenvalues for $L_3$ when $L_1 = x u_x$.
 \end{solution}
