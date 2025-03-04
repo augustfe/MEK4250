@@ -27,7 +27,9 @@
 
     The matrix $A$ for describing $L u = u_x$ using linear continuous Lagrange elements is defined by the elements
     \begin{equation*}
-        A_{ij} = \int_{\Omega} \phi_i' \phi_j \, dx.
+        A_{ij}
+        = \int_{\Omega} (L \phi_i) \phi_j \, dx
+        = \int_{\Omega} \phi_i' \phi_j \, dx.
     \end{equation*}
     As the basis functions are linear, the derivative of the basis functions are constant.
     If there is no overlap between the basis functions, the integral is zero, and we clearly have $A_{ij} = 0 = -A_{ji}$.
