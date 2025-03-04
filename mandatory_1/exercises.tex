@@ -257,3 +257,35 @@
 
     We have thus shown that the conditions in \cref{eq:5.15,eq:5.16,eq:5.17} are satisfied for $V_h = H^1_0$ and $Q_h = L^2$.
 \end{solution}
+
+\begin{exercise}{5.2}
+    Show that the conditions in \cref{eq:5.15,eq:5.16,eq:5.17} are satisfied for Taylor--Hood and Mini discretizations. % chktex 8
+    (Note that Crouzeix--Raviart is non-conforming so it is more difficult to prove these conditions for this case.) % chktex 8
+\end{exercise}
+
+\begin{solution}{5.2}
+    The Taylor--Hood elements are defined by the basis functions % chktex 8
+    \begin{equation}
+        \begin{split}
+            u &: N_i = a_i + b_i x + c_i y + d_i x y + e_i x^2 + f_i y^2, \\
+            p &: L_i = k_i + l_i x + m_i y.
+        \end{split}
+    \end{equation}
+    We then have
+    \begin{align*}
+        \nabla u &=
+        \begin{bmatrix}
+            b_i + d_i y + 2 e_i x \\
+            c_i + d_i x + 2 f_i y
+        \end{bmatrix},
+        &
+        \nabla \cdot u &= ?
+        &
+        \nabla p &=
+        \begin{bmatrix}
+            l_i \\
+            m_i
+        \end{bmatrix}.
+    \end{align*}
+
+\end{solution}
