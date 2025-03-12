@@ -1,4 +1,10 @@
-\begin{exercise}{4.6}
+\input{eigenvalues.tex}
+
+\newpage
+
+\begin{comment}
+
+\begin{exercise}{5.6}
     Consider the eigenvalues of the operators, $L_1$, $L_2$, and $L_3$, where $L_1 u = u_x$, $L_2 u = -\alpha u_{xx}$, $\alpha = 1.0 e^{-5}$, and $L_3 = L_1 + L_2$, with homogeneous Dirichlet conditions.
     For which of the operators are the eigenvalues positive and real?
     Repeat the exercise with $L_1 = x u_x$.
@@ -39,9 +45,9 @@
         u(x) = e^{i \sqrt{\alpha} x}.
     \end{equation}
 \end{solution}
-\end{comment}
+% \end{comment}
 
-\begin{solution}{4.6}
+\begin{solution}{5.6}
     For this exercise, let the domain be $[0, 1]$ for simplicity.
     For the first part of the exercise, we are seeking solutions to
     \begin{equation}
@@ -148,8 +154,9 @@
     \begin{equation}
         u(x) = C x^\lambda,
         \quad \text{for }
-        \lambda \in \mathbb{R}.
+        \lambda \in \mathbb{R},
     \end{equation}
+    however as zero is included in the domain, we require that $\lambda > 0$.
     At $x = 0$ we have $u(0) = 0$, while we at $x = 1$ have
     \begin{equation}
         u(1) = C,
@@ -157,13 +164,22 @@
     and as such we sadly only have the trivial solution $u(x) = 0$ for all $\lambda$.
 
     I have no clue as to how to find the eigenvalues for $L_3$ when $L_1 = x u_x$.
+
+    With this new $L_1$, we have that
+    \begin{equation}
+        L_3 u = x u_x - \alpha u_{xx},
+    \end{equation}
+
+    \begin{equation}
+        \lambda u - x u_x + \alpha u_{xx} = 0.
+    \end{equation}
 \end{solution}
 
-\begin{exercise}{5.1}
-    Show that the conditions in \cref{eq:5.15,eq:5.16,eq:5.17} are satisfied for $V_h = H^1_0$ and $Q_h = L^2$.
+\begin{exercise}{6.1}
+    Show that the conditions in \cref{eq:6.15,eq:6.16,eq:6.17} are satisfied for $V_h = H^1_0$ and $Q_h = L^2$.
 \end{exercise}
 
-\begin{solution}{5.1}
+\begin{solution}{6.1}
     For this exercise we are considering Stokes problem, wherein we want to find $u_h \in V_h$ and $p_h \in Q_h$ such that
     \begin{equation}
         \begin{split}
@@ -184,21 +200,21 @@
         \text{\small Boundedness of $a$:}
         && \quad a(u_h, v_h) &\leq C_1 \norm{u_h}_{V_h} \norm{v_h}_{V_h},
         & \forall u_h, v_h \in V_h,
-        \tag{5.15} \label{eq:5.15}
+        \tag{6.15} \label{eq:6.15}
         \\
         \text{\small Boundedness of $b$:}
         && \quad b(q_h, u_h) &\leq C_2 \norm{q_h}_{Q_h} \norm{u_h}_{V_h},
         & \forall u_h \in V_h, q_h \in Q_h,
-        \tag{5.16} \label{eq:5.16}
+        \tag{6.16} \label{eq:6.16}
         \\
         \text{\small Coercivity of $a$:}
         && \quad a(u_h, u_h) &\geq C_3 \norm{u_h}_{V_h}^2,
         & \forall u_h \in Z_h,
-        \tag{5.17} \label{eq:5.17}
+        \tag{6.17} \label{eq:6.17}
     \end{align}
     where $Z_h = \{ u_h \in V_h \mid b(u_h, q_h) = 0, \, \forall q_h \in Q_h \}$.
 
-    For \cref{eq:5.15}, we have
+    For \cref{eq:6.15}, we have
     \begin{equation}
         a(u_h, v_h) = \int_{\Omega} \nabla u_h : \nabla v_h \diff x,
     \end{equation}
@@ -206,9 +222,9 @@
     \begin{equation}
         a(u_h, v_h) \leq \norm{\nabla u_h}_{L^2} \norm{\nabla v_h}_{L^2} = \abs{u_h}_{H^1} \abs{v_h}_{H^1}.
     \end{equation}
-    As we have previously shown that the $H^1$ semi-norm is equivalent to the $H^1$ norm, \cref{eq:5.15} is satisfied.
+    As we have previously shown that the $H^1$ semi-norm is equivalent to the $H^1$ norm, \cref{eq:6.15} is satisfied.
 
-    For \cref{eq:5.16}, we have
+    For \cref{eq:6.16}, we have
     \begin{equation}
         b(q_h, u_h) = \int_{\Omega} q_h \, \nabla \cdot u_h \diff x,
     \end{equation}
@@ -245,25 +261,26 @@
     \begin{equation}
         b(q_h, u_h) \leq \sqrt{d} \norm{q_h}_{L^2} \norm{\nabla u_h}_{L^2},
     \end{equation}
-    and as such \cref{eq:5.16} is satisfied.
+    and as such \cref{eq:6.16} is satisfied.
 
-    For \cref{eq:5.17}, we have
+    For \cref{eq:6.17}, we have
     \begin{equation}
         a(u_h, u_h)
         = \int_{\Omega} \nabla u_h : \nabla u_h \diff x
         = \norm{\nabla u_h}_{L^2}^2 = \abs{u_h}_{H^1}^2.
     \end{equation}
-    As we have previously shown that the $H^1$ semi-norm is equivalent to the $H^1$ norm, \cref{eq:5.17} is satisfied.
+    As we have previously shown that the $H^1$ semi-norm is equivalent to the $H^1$ norm, \cref{eq:6.17} is satisfied.
 
-    We have thus shown that the conditions in \cref{eq:5.15,eq:5.16,eq:5.17} are satisfied for $V_h = H^1_0$ and $Q_h = L^2$.
+    We have thus shown that the conditions in \cref{eq:6.15,eq:6.16,eq:6.17} are satisfied for $V_h = H^1_0$ and $Q_h = L^2$.
 \end{solution}
+\end{comment}
 
-\begin{exercise}{5.2}
-    Show that the conditions in \cref{eq:5.15,eq:5.16,eq:5.17} are satisfied for Taylor--Hood and Mini discretizations. % chktex 8
+\begin{exercise}{6.2}
+    Show that the conditions in \cref{eq:6.15,eq:6.16,eq:6.17} are satisfied for Taylor--Hood and Mini discretizations. % chktex 8
     (Note that Crouzeix--Raviart is non-conforming so it is more difficult to prove these conditions for this case.) % chktex 8
 \end{exercise}
 
-\begin{solution}{5.2}
+\begin{solution}{6.2}
     The Taylor--Hood elements are defined by the basis functions % chktex 8
     \begin{equation}
         \begin{split}
@@ -288,4 +305,7 @@
         \end{bmatrix}.
     \end{align*}
 
+    \begin{equation}
+        u_h = \sum_{i = 1}^{N} u_i N_i,
+    \end{equation}
 \end{solution}
