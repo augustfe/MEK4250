@@ -169,14 +169,15 @@
         \end{split}
     \end{equation}
     and we now need to show that $u_h \in V_h \subset H^1_0$.
-    With a slight abuse of notation, we have
-    \begin{align*}
-        \nabla \cdot N_i &=
-        \nabla \cdot (a_i + b_i x + c_i y + d_i xy - d_i x^2 y - d_i x y^2) \\
-        &= b_i + c_i - d_i x^2 - 4d_i xy - d_i y^2 \\
-        &= b_i + c_i - d_i (x^2 + 4xy + y^2).
-    \end{align*}
-    Presumably, we have that $V_h \subset H^1_0$, however I don't understand Fortin's trick.
+    % With a slight abuse of notation, we have
+    % \begin{align*}
+    %     \nabla \cdot N_i &=
+    %     \nabla \cdot (a_i + b_i x + c_i y + d_i xy - d_i x^2 y - d_i x y^2) \\
+    %     &= b_i + c_i - d_i x^2 - 4d_i xy - d_i y^2 \\
+    %     &= b_i + c_i - d_i (x^2 + 4xy + y^2).
+    % \end{align*}
+    % Presumably, we have that $V_h \subset H^1_0$, however I don't understand Fortin's trick.
+    Notice that along each
 \end{solution}
 
 \begin{exercise}{6.6}
@@ -190,3 +191,18 @@
     \end{align*}
     Test whether the approximation is of the expected order for $P_4$--$P_3$, $P_4$--$P_2$, $P_3$--$P_2$, and $P_3$--$P_1$.
 \end{exercise}
+
+\begin{solution}{6.6}
+    The solver is implemented in \texttt{stokes.py}, and the results are shown in \cref{fig:convergence}.
+    As we see, we get convergence of order 4, 3, 3, and 2 for the $P_4$--$P_3$, $P_4$--$P_2$, $P_3$--$P_2$, and $P_3$--$P_1$ elements, respectively.
+    As to whether this is the expected order of convergence, I am not sure.
+
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[
+            width=0.8\textwidth,
+            keepaspectratio,
+        ]{stokes_convergence.pdf}
+        \caption{Convergence of the $P_4$--$P_3$, $P_4$--$P_2$, $P_3$--$P_2$, and $P_3$--$P_1$ elements for the Stokes problem with the exact solution $u = (\sin(\pi y), \cos(\pi x))$ and $p = \sin(2 \pi x)$. Computed with $N = 4, 8, 16, 32, 64$.\label{fig:convergence}}
+    \end{figure}
+\end{solution}
