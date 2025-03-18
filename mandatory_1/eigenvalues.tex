@@ -193,9 +193,38 @@
 \end{exercise}
 
 \begin{solution}{6.6}
-    The solver is implemented in \texttt{stokes.py}, and the results are shown in \cref{fig:convergence}.
-    As we see, we get convergence of order 4, 3, 3, and 2 for the $P_4$--$P_3$, $P_4$--$P_2$, $P_3$--$P_2$, and $P_3$--$P_1$ elements, respectively.
-    As to whether this is the expected order of convergence, I am not sure.
+    We begin by describing the weak formulation for Stokes problem, namely to find $u \in H_{D,0}^{1}$ and $p \in L^{2}$ such that
+    \begin{align*}
+        a(u, v) + b(p, v) &= f(v), & v &\in H_{D,0}^{1} \\
+        b(q, u) &= 0, & q &\in L^{2},
+    \end{align*}
+    where
+    \begin{align*}
+        a(u, v) &= \int_{\Omega} \nabla u : \nabla v \, \diff x, \\
+        b(p, v) &= \int_\Omega p \nabla \cdot v \, \diff x, \\
+        f(v) &= \int_{\Omega} f \, v \, \diff x + \int_{\partial\Omega_N} h \, v \, \diff s.
+    \end{align*}
+    As far as I understand, we have for this problem $h = 0$, removing the Neumann boundary term.
+    For the dirichlet term, we prescribe
+    \begin{equation*}
+        u = (\sin(\pi y), \cos(\pi x)) \quad \text{on } \partial\Omega_D,
+    \end{equation*}
+    where $\partial\Omega_D$ consists of the top, bottom and left boundaries.
+
+    The solver is implemented in \texttt{stokes.py}\footnote{Add link to file on GitHub}, and the results are shown in \cref{fig:convergence}.
+    The expected order of convergence rates is found through
+    \begin{equation*}
+        \norm{u - h_h}_1 + \norm{p - p_h} \leq C h^k \norm{u}_{k+1} + D h^{\ell + 1} \norm{p}_{\ell + 1},
+    \end{equation*}
+    where $k$ and $\ell$ are the polynomial degree of the velocity and pressure respectively.
+    With the different elements, we would therefore expect convergence rates of
+    \begin{align*}
+        (P_4\text{--}P_3) &&  h^4 \norm{u}_{5} + D h^{4} \norm{p}_{4} &= h^4 (\norm{u}_{5} + D \norm{p}_{4}) \\
+        (P_4\text{--}P_2) &&  h^4 \norm{u}_{5} + D h^{3} \norm{p}_{3} &= h^3 (h \norm{u}_{5} + D \norm{p}_{3}) \\
+        (P_3\text{--}P_2) &&  h^3 \norm{u}_{4} + D h^{3} \norm{p}_{3} &= h^3 (\norm{u}_{4} + D \norm{p}_{3}) \\
+        (P_3\text{--}P_1) &&  h^3 \norm{u}_{4} + D h^{2} \norm{p}_{2} &= h^2 (h \norm{u}_{3} + D \norm{p}_{2})
+    \end{align*}
+    As we see numerically in \cref{fig:convergence}, we get convergence of order 4, 3, 3, and 2 for the $P_4$--$P_3$, $P_4$--$P_2$, $P_3$--$P_2$, and $P_3$--$P_1$ elements, respectively, which aligns with our expectations.
 
     \begin{figure}[htbp]
         \centering

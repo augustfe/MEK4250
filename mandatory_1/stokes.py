@@ -348,15 +348,16 @@ if __name__ == "__main__":
     if MPI.COMM_WORLD.rank == 0:
         import matplotlib.pyplot as plt
 
-        # fig, ax = plt.subplots()
         fig = plt.figure()
 
         for (u_dim, p_dim), rate in zip(up_dim, rates, strict=True):
             plt.plot(rate, label=f"$P_{u_dim}$–$P_{p_dim}$")
 
-        # plt.xlabel("$h$")
+        plt.xticks(
+            range(len(Ms) - 1), [f"$N_{i + 1} / N_{i}$" for i in range(len(Ms) - 1)]
+        )
+        plt.grid()
         plt.ylabel("$r$")
-        # plt.xticks(hs)
+        plt.title("Order of convergence for the Stokes problem")
         plt.legend()
         plt.savefig("stokes_convergence.pdf", bbox_inches="tight")
-        # plt.show()
