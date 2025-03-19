@@ -1,180 +1,51 @@
-\input{eigenvalues.tex}
-
-\newpage
-
-\begin{comment}
-
 \begin{exercise}{5.6}
     Consider the eigenvalues of the operators, $L_1$, $L_2$, and $L_3$, where $L_1 u = u_x$, $L_2 u = -\alpha u_{xx}$, $\alpha = 1.0 e^{-5}$, and $L_3 = L_1 + L_2$, with homogeneous Dirichlet conditions.
     For which of the operators are the eigenvalues positive and real?
     Repeat the exercise with $L_1 = x u_x$.
 \end{exercise}
 
-\begin{comment}
-    \begin{solution}{4.6}
-    For this exercise, I'm assuming that the domain is $[0, 1]$.
-    For $L_1$, the eigenfunctions are of the from
-    \begin{equation}
-        u(x) = C e^{\lambda x},
-    \end{equation}
-    as we then have
-    \begin{equation}
-        L_1 C e^{\lambda x} = \frac{\partial}{\partial x} C e^{\lambda x} = C \lambda e^{\lambda x}.
-    \end{equation}
-    For the boundary conditions, we have $u(0) = u(1) = 0$, which gives us
-    \begin{equation}
-        C e^{\lambda \cdot 0} = C e^0 = C
-    \end{equation}
-    and
-    \begin{equation}
-        e^{\lambda \cdot 1} = C e^{\lambda},
-    \end{equation}
-    which gives us the trivial solution $C = 0$ and $u(x) = 0$, for all $\lambda$.
-
-    For $L_2$, we consider first the operator $\frac{\partial^2}{\partial x^2}$.
-    The eigenfunctions of this operator are loosely of the form
-    \begin{equation}
-        u(x) = e^{i x},
-    \end{equation}
-    as then
-    \begin{equation}
-        \frac{\partial^2}{\partial x^2} e^{i x} = -i^2 e^{i x} = -e^{i x}.
-    \end{equation}
-    In order to get the factor $\alpha$, we need to adjust the exponent such that we have
-    \begin{equation}
-        u(x) = e^{i \sqrt{\alpha} x}.
-    \end{equation}
-\end{solution}
-
 \begin{solution}{5.6}
-    For this exercise, let the domain be $[0, 1]$ for simplicity.
-    For the first part of the exercise, we are seeking solutions to
-    \begin{equation}
-        u_x = \lambda u,
-    \end{equation}
-    for which the solutions are
-    \begin{equation}
-        u(x) = C e^{\lambda x}.
-    \end{equation}
-    The boundary conditions are $u(0) = u(1) = 0$, which gives us that $C = 0$, and thus $u(x) = 0$ for all $\lambda$.
+    Here, I assume that the domain is $[0, 1]$, and the boundary conditions are $u(0) = u(1) = 0$.
+    Solving for the eigenvalues for the first operators is not terribly difficult, although it is a bit tedious.
+    Instead, we will use the finite element method.
 
-    For the second part of the exercise, we are seeking solutions to
-    \begin{equation}
-        -\alpha u_{xx} = \lambda u,
-    \end{equation}
-    or equivalently
-    \begin{equation}
-        -u_{xx} = \tfrac{\lambda}{\alpha} u.
-    \end{equation}
-    As the second derivative is a scaled version of the function itself, with opposite sign, we can guess that the solutions are of the form
-    \begin{equation}
-        u(x) = \sin(C x)
-        \quad \text{or} \quad
-        u(x) = \cos(C x).
-    \end{equation}
-    As the boundary conditions are homogeneous Dirichlet conditions, we can see that the sine function is the only one that satisfies the boundary conditions, for $C = k \pi$, $k = 0, 1, 2, \ldots$.
-    Taking the double derivative of the sine function, we get
-    \begin{equation}
-        -u_{xx} = (k \pi)^2 \sin(k \pi x),
-    \end{equation}
-    and hence
-    \begin{equation}
-        \tfrac{\lambda}{\alpha} = (k \pi)^2 \implies \lambda = \alpha (k \pi)^2.
-    \end{equation}
-    As $\alpha > 0$, we see that the eigenvalues are positive and real for $L_2$, for $k \geq 1$.
+    With the eigenvalue problem $L u = \lambda u$, we have the associated weak form
+    \begin{equation*}
+        \int_0^1 L u \, v \, \diff x = \lambda \int_0^1 u \, v \, \diff x,
+    \end{equation*}
+    where $L$ is one of the operators $L_1$, $L_2$, or $L_3$.
+    For the first operator, we then have
+    \begin{equation*}
+        \int_0^1 u_x \, v \, \diff x = \lambda \int_0^1 u \, v \, \diff x.
+    \end{equation*}
+    For $L_2$ we have
+    \begin{equation*}
+        \int_{0}^{1} -\alpha u_{xx} \, v \, \diff x = \lambda \int_{0}^{1} u \, v \, \diff x,
+    \end{equation*}
+    however, we can integrate by parts to get
+    \begin{equation*}
+        \int_{0}^{1} \alpha u_x \, v_x \, \diff x = \lambda \int_{0}^{1} u \, v \, \diff x.
+    \end{equation*}
+    Finally, for $L_3$ we have
+    \begin{equation*}
+        \int_{0}^{1} (u_x - \alpha u_{xx}) \, v \, \diff x = \lambda \int_{0}^{1} u \, v \, \diff x,
+    \end{equation*}
+    which again can be integrated by parts to get
+    \begin{equation*}
+        \int_{0}^{1} u_x \, v  + \alpha u_x \, v_x \, \diff x = \lambda \int_{0}^{1} u \, v \, \diff x.
+    \end{equation*}
 
-    For $L_3$, we are looking for a solution
-    \begin{equation}
-        u_x - \alpha u_{xx} = \lambda u.
-    \end{equation}
-    Recalling back to videregående ODE solving, we can guess that the solution is of the form
-    \begin{equation}
-        u(x) = e^{rx},
-    \end{equation}
-    which gives the equation
-    \begin{equation}
-        -\alpha r^2 + r - \lambda = 0.
-    \end{equation}
-    Recalling the abc-formula, we then have the solutions
-    \begin{align}
-        r &=
-        \frac{-1 \pm \sqrt{1 - 4 \alpha \lambda}}{-2 \alpha}
-        = \frac{1 \mp \sqrt{1 - 4 \alpha \lambda}}{2 \alpha}.
-    \end{align}
-    For $1 - 4 \alpha \lambda > 0$, we have two real roots, however they only permit the trivial solution.
-    For $1 - 4 \alpha \lambda = 0$, we have one real root, $r = 1 / 2\alpha$, which gives us a solution of the form
-    \begin{equation}
-        (C_1 + C_2 x) e^{x / 2\alpha},
-    \end{equation}
-    however for the boundary conditions, we must have $C_1 = C_2 = 0$, and hence the only solution is the trivial one.
+    This is implemented in \texttt{eigs.py}, resulting in the eigenvalues shown in \cref{fig:eigenvalues}.
+    As we see, adding the diffusion term to the first operator results in $L_3$ having eigenvalues with positive real parts.
 
-    Finally, for $1 - 4 \alpha \lambda < 0$, we have two complex roots
-    \begin{equation}
-        r = \frac{1}{2\alpha} \pm i \frac{\sqrt{4 \alpha \lambda - 1}}{2\alpha},
-    \end{equation}
-    which gives us a solution of the form
-    \begin{equation}
-        e^{x / 2\alpha} \left(
-            C_1 \cos\left(\frac{\sqrt{4 \alpha \lambda - 1}}{2\alpha} x\right)
-            + C_2 \sin\left(\frac{\sqrt{4 \alpha \lambda - 1}}{2\alpha} x\right)
-        \right).
-    \end{equation}
-    At $x = 0$, we have
-    \begin{equation}
-        e^{0} \left(
-            C_1 \cos\left(\frac{\sqrt{4 \alpha \lambda - 1}}{2\alpha} \cdot 0 \right)
-            + C_2 \sin\left(\frac{\sqrt{4 \alpha \lambda - 1}}{2\alpha} \cdot 0 \right)
-        \right),
-    \end{equation}
-    such that we must have $C_1 = 0$.
-    At $x = 1$, we have
-    \begin{equation}
-        e^{1 / 2\alpha} \left( C_2 \sin\left(\frac{\sqrt{4 \alpha \lambda - 1}}{2\alpha}\right) \right) = 0,
-    \end{equation}
-    which is valid when $\frac{\sqrt{4 \alpha \lambda - 1}}{2\alpha} = k \pi$, $k = 0, 1, 2, \ldots$.
-    This gives us the eigenvalues
-    \begin{align*}
-        \frac{\sqrt{4 \alpha \lambda - 1}}{2\alpha} &= k \pi \\
-        4 \alpha \lambda - 1 &= (2\alpha k \pi)^2 \\
-        \lambda &= \frac{(2 \alpha k \pi)^2 + 1}{4 \alpha} \\
-        \lambda &= \alpha (k \pi)^2 + \frac{1}{4 \alpha},
-    \end{align*}
-    which are always positive and real.
-
-    Changing $L_1$ to $x u_x$, we have the equation
-    \begin{equation}
-        x u_x = \lambda u \implies u_x = \frac{\lambda}{x} u.
-    \end{equation}
-    As far as I can see, the monomials satisfy the equation, as
-    \begin{equation}
-        u_x = \frac{\partial}{\partial x} x^n = n x^{n - 1} = \frac{n}{x} x^n = \frac{n}{x} u.
-    \end{equation}
-    Looking even closer, we see that we do not even need to restrict ourselves the monomials, but can rather have
-    \begin{equation}
-        u(x) = C x^\lambda,
-        \quad \text{for }
-        \lambda \in \mathbb{R},
-    \end{equation}
-    however as zero is included in the domain, we require that $\lambda > 0$.
-    At $x = 0$ we have $u(0) = 0$, while we at $x = 1$ have
-    \begin{equation}
-        u(1) = C,
-    \end{equation}
-    and as such we sadly only have the trivial solution $u(x) = 0$ for all $\lambda$.
-
-    I have no clue as to how to find the eigenvalues for $L_3$ when $L_1 = x u_x$.
-
-    With this new $L_1$, we have that
-    \begin{equation}
-        L_3 u = x u_x - \alpha u_{xx},
-    \end{equation}
-
-    \begin{equation}
-        \lambda u - x u_x + \alpha u_{xx} = 0.
-    \end{equation}
+    \begin{figure}[ht]
+        \centering
+        \includegraphics[width=0.8\textwidth]{eigs.pdf}
+        \caption{Eigenvalues for the operators $L_1$, $L_2$, and $L_3$ with homogeneous Dirichlet conditions. Computed with $N = 500$ first-order Lagrange elements.\label{fig:eigenvalues}}
+    \end{figure}
 \end{solution}
 
-\begin{exercise}{6.1}
+\begin{exercise}{6.1}\label{ex:6.1}
     Show that the conditions in \cref{eq:6.15,eq:6.16,eq:6.17} are satisfied for $V_h = H^1_0$ and $Q_h = L^2$.
 \end{exercise}
 
@@ -272,7 +143,6 @@
 
     We have thus shown that the conditions in \cref{eq:6.15,eq:6.16,eq:6.17} are satisfied for $V_h = H^1_0$ and $Q_h = L^2$.
 \end{solution}
-\end{comment}
 
 \begin{exercise}{6.2}
     Show that the conditions in \cref{eq:6.15,eq:6.16,eq:6.17} are satisfied for Taylor--Hood and Mini discretizations. % chktex 8
@@ -284,27 +154,145 @@
     \begin{equation}
         \begin{split}
             u &: N_i = a_i + b_i x + c_i y + d_i x y + e_i x^2 + f_i y^2, \\
+            p &: L_i = k_i + l_i x + m_i y,
+        \end{split}
+    \end{equation}
+    under the condition that $N_i$ is continuous across element boundaries.
+    As such, we have that $u_h \in V_h \subset H^1_0$ and $p_h \in Q_h \subset L^2$ for the Taylor--Hood elements. % chktex 8
+    They therefore satisfy the conditions in \cref{eq:6.15,eq:6.16,eq:6.17}, as shown in \cref{ex:6.1}.
+
+    The Mini elements are, as far as I understand, defined by the basis functions
+    \begin{equation}
+        \begin{split}
+            u &: N_i = a_i + b_i x + c_i y + d_i xy(1 - x - y), \\
             p &: L_i = k_i + l_i x + m_i y.
         \end{split}
     \end{equation}
-    We then have
-    \begin{align*}
-        \nabla u &=
-        \begin{bmatrix}
-            b_i + d_i y + 2 e_i x \\
-            c_i + d_i x + 2 f_i y
-        \end{bmatrix},
-        &
-        \nabla \cdot u &= ?
-        &
-        \nabla p &=
-        \begin{bmatrix}
-            l_i \\
-            m_i
-        \end{bmatrix}.
-    \end{align*}
+    The Mini element behaves like the $P_1$--$P_1$ element across the boundaries, and as such the Mini element satisfies the conditions in \cref{eq:6.15,eq:6.16,eq:6.17} as well.
+\end{solution}
 
-    \begin{equation}
-        u_h = \sum_{i = 1}^{N} u_i N_i,
-    \end{equation}
+\begin{exercise}{6.6}
+    In the previous problem the solution was a second order polynomial in the velocity and first order in the pressure.
+    We may therefore obtain the exact solution and it is therefore difficult to check order of convergence for higher order methods with this solution.
+    In this exercise you should therefore implement the problem
+    \begin{align*}
+        u &= (\sin(\pi y), \cos(\pi x)),
+        & p &= \sin(2 \pi x),
+        & f &= -\Delta u - \nabla p.
+    \end{align*}
+    Test whether the approximation is of the expected order for $P_4$--$P_3$, $P_4$--$P_2$, $P_3$--$P_2$, and $P_3$--$P_1$.
+\end{exercise}
+
+\begin{solution}{6.6}\label{sol:6.6}
+    We begin by describing the weak formulation for Stokes problem, namely to find $u \in H_{D,0}^{1}$ and $p \in L^{2}$ such that
+    \begin{align*}
+        a(u, v) + b(p, v) &= f(v), & v &\in H_{D,0}^{1} \\
+        b(q, u) &= 0, & q &\in L^{2},
+    \end{align*}
+    where
+    \begin{align*}
+        a(u, v) &= \int_{\Omega} \nabla u : \nabla v \, \diff x, \\
+        b(p, v) &= \int_\Omega p \nabla \cdot v \, \diff x, \\
+        f(v) &= \int_{\Omega} f \, v \, \diff x + \int_{\partial\Omega_N} h \, v \, \diff s.
+    \end{align*}
+    For this problem we have
+    \begin{equation*}
+        h = \frac{\partial u}{\partial n} + p n \quad \text{on } \partial\Omega_N,
+    \end{equation*}
+    where $\frac{\partial u}{\partial n} = \nabla u \, n$.
+    Note that we have changed the sign of $p$ from the original description.
+    With the given solution we have
+    \begin{align*}
+        h &= \frac{\partial u}{\partial n} - p n \\
+        &= \pi
+        \begin{bmatrix}
+            0 & \cos(\pi y) \\
+            -\sin(\pi x) & 0
+        \end{bmatrix} n - \sin(2 \pi x) n.
+    \end{align*}
+    Here, we have Neumann conditions along the right boundary at $x = 1$, such that $n = (1, 0)$.
+    Inserting this, we get
+    \begin{equation*}
+        \pi
+        \begin{bmatrix}
+            0 & \cos(\pi y) \\
+            -\sin(\pi) & 0
+        \end{bmatrix}
+        \begin{bmatrix}
+            1 \\ 0
+        \end{bmatrix} - \sin(2 \pi)
+        \begin{bmatrix}
+            1 \\ 0
+        \end{bmatrix}
+        = 0.
+    \end{equation*}
+
+    For the dirichlet term, we prescribe
+    \begin{equation*}
+        u = (\sin(\pi y), \cos(\pi x)) \quad \text{on } \partial\Omega_D,
+    \end{equation*}
+    where $\partial\Omega_D$ consists of the top, bottom and left boundaries.
+
+    The solver is implemented in \texttt{stokes.py}\footnote{Add link to file on GitHub}, and the results are shown in \cref{fig:convergence}.
+    The expected order of convergence rates is found through
+    \begin{equation*}
+        \norm{u - h_h}_1 + \norm{p - p_h} \leq C h^k \norm{u}_{k+1} + D h^{\ell + 1} \norm{p}_{\ell + 1},
+    \end{equation*}
+    where $k$ and $\ell$ are the polynomial degree of the velocity and pressure respectively.
+    With the different elements, we would therefore expect convergence rates of
+    \begin{align*}
+        (P_4\text{--}P_3) &&  h^4 \norm{u}_{5} + D h^{4} \norm{p}_{4} &= h^4 (\norm{u}_{5} + D \norm{p}_{4}) \\
+        (P_4\text{--}P_2) &&  h^4 \norm{u}_{5} + D h^{3} \norm{p}_{3} &= h^3 (h \norm{u}_{5} + D \norm{p}_{3}) \\
+        (P_3\text{--}P_2) &&  h^3 \norm{u}_{4} + D h^{3} \norm{p}_{3} &= h^3 (\norm{u}_{4} + D \norm{p}_{3}) \\
+        (P_3\text{--}P_1) &&  h^3 \norm{u}_{4} + D h^{2} \norm{p}_{2} &= h^2 (h \norm{u}_{3} + D \norm{p}_{2})
+    \end{align*}
+    As we see numerically in \cref{fig:convergence}, we get convergence of order 4, 3, 3, and 2 for the $P_4$--$P_3$, $P_4$--$P_2$, $P_3$--$P_2$, and $P_3$--$P_1$ elements, respectively, which aligns with our expectations.
+
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[
+            width=0.8\textwidth,
+            keepaspectratio,
+        ]{stokes_convergence.pdf}
+        \caption{Convergence of the $P_4$--$P_3$, $P_4$--$P_2$, $P_3$--$P_2$, and $P_3$--$P_1$ elements for the Stokes problem with the exact solution $u = (\sin(\pi y), \cos(\pi x))$ and $p = \sin(2 \pi x)$. Computed with $N = 4, 8, 16, 32, 64$.\label{fig:convergence}}
+    \end{figure}
+\end{solution}
+
+\begin{exercise}{6.7}
+    Implement the Stokes problem with analytical solution
+    \begin{equation*}
+        u = (\sin(\pi y), \cos(\pi x)),
+        \quad p = \sin(2 \pi x),
+        \quad f = -\Delta u - \nabla p
+    \end{equation*}
+    on the unit square.
+    Consider the case where you have Dirichlet conditions on the sides $x = 0$, $x = 1$, and $y = 1$ while Neumann is used on the last side (this way we avoid the singular system associated with either pure Dirichlet or pure Neumann problems).
+    Then determine the order of approximation of wall shear stress on the side $x = 0$.
+    The wall shear stress on the side $x = 0$ is $\nabla u \cdot t$ where $t = (0, 1)$ is the tangent along $x = 0$.
+\end{exercise}
+
+\begin{solution}{6.7}
+    The solution is computed in much the same way as in \cref{sol:6.6}, however the solver needs to be adapted slightly.
+    Previously we had Neumann conditions on the right boundary, which we did not have to implement explicitly, as the value of the Neumann boundary was zero.
+    Now, however, we need to add the Neumann boundary term explicitly.
+
+    The wall shear stress is computed as $\nabla u \cdot t$, where $t = (0, 1)$.
+    The error is then approximately computed as
+    \begin{equation*}
+        \norm{\nabla u \cdot t - \nabla u_h \cdot t}_{L^2(\Gamma)},
+    \end{equation*}
+    where $\Gamma$ is the boundary $x = 0$.
+    One complicating factor is that we are integrating along the Dirichlet boundary, where the solution is already imposed, leading to in effect measuring rounding errors.
+    To handle this, we interpolate the solution and the exact function to a higher degree function space beforehand.
+
+    This however leads to the fact that, as far as I can see, we are essentially measuring polynomial interpolation errors, which for a polynomial of degree $k$ is expected to be of degree $k$.
+    This is exactly what we see in \cref{fig:wall_shear_stress}, where the approximation is of order 5 for the $P_5$--$P_4$ element, order 4 for the $P_4$--$P_3$ and $P_4$--$P_2$ elements, and order 3 for the $P_3$--$P_2$ and $P_3$--$P_1$ elements, and finally order 2 for the $P_2$--$P_1$ element.
+
+    The computation is done in \texttt{wall\_shear.py}\footnote{Add link to file on GitHub}.
+
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=0.8\textwidth]{wall_shear.pdf}
+        \caption{Convergence of the wall shear stress on the side $x = 0$ for the Stokes problem with the exact solution $u = (\sin(\pi y), \cos(\pi x))$ and $p = \sin(2 \pi x)$. Computed with $N = 4, 8, 16, 32, 64$.\label{fig:wall_shear_stress}}
+    \end{figure}
 \end{solution}

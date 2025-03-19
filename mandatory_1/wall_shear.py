@@ -139,6 +139,7 @@ if __name__ == "__main__":
         (3, 1),
         (2, 1),
     )
+    dash_dot = [":", "-"]
     rates = np.zeros((len(up_dim), len(Ms) - 1), dtype=dolfinx.default_scalar_type)
 
     for i, (u_dim, p_dim) in enumerate(up_dim):
@@ -149,8 +150,8 @@ if __name__ == "__main__":
         rates[i] = rate
 
     plt.figure()
-    for (u_dim, p_dim), rate in zip(up_dim, rates, strict=True):
-        plt.plot(rate, label=f"$P_{u_dim}$–$P_{p_dim}$")
+    for i, ((u_dim, p_dim), rate) in enumerate(zip(up_dim, rates, strict=True)):
+        plt.plot(rate, dash_dot[i % 2], label=f"$P_{u_dim}$–$P_{p_dim}$")
 
     plt.xticks(
         range(len(Ms) - 1),
