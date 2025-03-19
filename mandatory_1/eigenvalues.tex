@@ -204,7 +204,38 @@
         b(p, v) &= \int_\Omega p \nabla \cdot v \, \diff x, \\
         f(v) &= \int_{\Omega} f \, v \, \diff x + \int_{\partial\Omega_N} h \, v \, \diff s.
     \end{align*}
-    As far as I understand, we have for this problem $h = 0$, removing the Neumann boundary term.
+    For this problem we have
+    \begin{equation*}
+        h = \frac{\partial u}{\partial n} + p n \quad \text{on } \partial\Omega_N,
+    \end{equation*}
+    where $\frac{\partial u}{\partial n} = \nabla u \, n$.
+    Note that we have changed the sign of $p$ from the original description.
+    With the given solution we have
+    \begin{align*}
+        h &= \frac{\partial u}{\partial n} - p n \\
+        &= \pi
+        \begin{bmatrix}
+            0 & \cos(\pi y) \\
+            -\sin(\pi x) & 0
+        \end{bmatrix} n - \sin(2 \pi x) n.
+    \end{align*}
+    Here, we have Neumann conditions along the right boundary at $x = 1$, such that $n = (1, 0)$.
+    Inserting this, we get
+    \begin{equation*}
+        \pi
+        \begin{bmatrix}
+            0 & \cos(\pi y) \\
+            -\sin(\pi) & 0
+        \end{bmatrix}
+        \begin{bmatrix}
+            1 \\ 0
+        \end{bmatrix} - \sin(2 \pi)
+        \begin{bmatrix}
+            1 \\ 0
+        \end{bmatrix}
+        = 0.
+    \end{equation*}
+
     For the dirichlet term, we prescribe
     \begin{equation*}
         u = (\sin(\pi y), \cos(\pi x)) \quad \text{on } \partial\Omega_D,
@@ -235,3 +266,16 @@
         \caption{Convergence of the $P_4$--$P_3$, $P_4$--$P_2$, $P_3$--$P_2$, and $P_3$--$P_1$ elements for the Stokes problem with the exact solution $u = (\sin(\pi y), \cos(\pi x))$ and $p = \sin(2 \pi x)$. Computed with $N = 4, 8, 16, 32, 64$.\label{fig:convergence}}
     \end{figure}
 \end{solution}
+
+\begin{exercise}{6.7}
+    Implement the Stokes problem with analytical solution
+    \begin{equation*}
+        u = (\sin(\pi y), \cos(\pi x)),
+        \quad p = \sin(2 \pi x),
+        \quad f = -\Delta u - \nabla p
+    \end{equation*}
+    on the unit square.
+    Consider the case where you have Dirichlet conditions on the sides $x = 0$, $x = 1$, and $y = 1$ while Neumann is used on the last side (this way we avoid the singular system associated with either pure Dirichlet or pure Neumann problems).
+    Then determine the order of approximation of wall shear stress on the side $x = 0$.
+    The wall shear stress on the side $x = 0$ is $\nabla u \cdot t$ where $t = (0, 1)$ is the tangent along $x = 0$.
+\end{exercise}

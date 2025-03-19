@@ -58,10 +58,6 @@ def visualize_mixed(mixed_function: fem.Function, scale: float = 1.0) -> None:
     plotter_p.show()
 
 
-def u_boundary(x: np.ndarray) -> np.ndarray:
-    return np.isclose(x[0], 0.0) | np.isclose(x[1], 0.0) | np.isclose(x[1], 1.0)
-
-
 def p_boundary(x: np.ndarray) -> np.ndarray:
     return np.isclose(x[0], 1.0)
 
@@ -146,7 +142,7 @@ def setup_bcs(
 
 
 def setup_problem(
-    W: fem.FunctionSpace, f: ufl.Coefficient
+    W: fem.FunctionSpace, f: ufl.Coefficient, h: ufl.Coefficient
 ) -> tuple[ufl.Form, ufl.Form]:
     r"""Setup the Stokes problem.
 
@@ -163,6 +159,8 @@ def setup_problem(
     Returns:
         tuple[ufl.Form, ufl.Form]: The bilinear and linear forms.
     """
+    mesh = W.mesh
+    ds = ufl.Measure("ds", domain=mesh)
     u, p = ufl.TrialFunctions(W)
     v, q = ufl.TestFunctions(W)
 
@@ -171,6 +169,7 @@ def setup_problem(
     F += ufl.inner(ufl.div(u), q) * ufl.dx
     F += ufl.inner(ufl.div(v), p) * ufl.dx
     F -= ufl.inner(f, v) * ufl.dx
+    F -= ufl.inner(h, v) * ds
 
     a, L = ufl.system(F)
 
@@ -182,6 +181,7 @@ def compute_solution(
     u_dim: int,
     p_dim: int,
     u_analytical: Callable[[np.ndarray], np.ndarray],
+    u_boundary: Callable[[np.ndarray], np.ndarray],
     f: ufl.Form | None = None,
     mesh: dolfinx.mesh.Mesh | None = None,
 ) -> fem.Function:
@@ -208,45 +208,22 @@ def compute_solution(
     return wh
 
 
-# def solve_problem(a: ufl.Form, L: ufl.Form, bcs: list[fem.DirichletBC]) -> fem.Function:
-#     """Solve the Stokes problem.
-
-#     Args:
-#         a (ufl.Form): The bilinear form.
-#         L (ufl.Form): The linear form.
-#         bcs (list[fem.DirichletBC]): The list of Dirichlet boundary conditions.
-
-#     Returns:
-#         fem.Function: The solution.
-#     """
-#     a_form = fem.form(a)
-#     A = fem.assemble_matrix(a_form, bcs=bcs)
-#     b: la.Vector = fem.assemble_vector(fem.form(L))
-#     fem.apply_lifting(b.array, [a_form], [bcs])
-
-#     b.scatter_reverse(la.InsertMode.add)
-#     for bc in bcs:
-#         bc.set(b.array)
-
-#     A_inv = splu(A.to_scipy())
-#     wh = fem.Function(W)
-#     wh.x.array[:] = A_inv.solve(b.array)
-
-#     return wh
-
-
 def solve_stokes(
-    mesh: dolfinx.mesh.Mesh, W: fem.FunctionSpace
+    mesh: dolfinx.mesh.Mesh,
+    W: fem.FunctionSpace,
+    u_boundary: Callable[[np.ndarray], np.ndarray],
 ) -> tuple[fem.Function, fem.Function]:
     x = ufl.SpatialCoordinate(mesh)
+    n = ufl.FacetNormal(mesh)
 
     u_ufl = ufl.as_vector((ufl.sin(ufl.pi * x[1]), ufl.cos(ufl.pi * x[0])))
     p_ufl = ufl.sin(2 * ufl.pi * x[0])
     f_ufl = -ufl.div(ufl.grad(u_ufl)) - ufl.grad(p_ufl)
+    h_ufl = ufl.grad(u_ufl) * n + n * p_ufl
 
     bcs = setup_bcs(W, mesh, u_boundary, u_analytical)
 
-    a, L = setup_problem(W, f_ufl)
+    a, L = setup_problem(W, f_ufl, h_ufl)
     problem = LinearProblem(
         a,
         L,
@@ -296,6 +273,7 @@ def compute_errors(
     Ms: list[int],
     u_dim: int,
     p_dim: int,
+    u_boundary: Callable[[np.ndarray], np.ndarray],
 ) -> np.ndarray:
     if MPI.COMM_WORLD.rank == 0:
         print(f"{u_dim=}, {p_dim=}")
@@ -304,7 +282,7 @@ def compute_errors(
         mesh = setup_mesh(M)
         comm = mesh.comm
         W = setup_function_space(mesh, u_dim, p_dim)
-        wh, w_ex = solve_stokes(mesh, W)
+        wh, w_ex = solve_stokes(mesh, W, u_boundary)
 
         u_h, p_h = wh.split()
         u_ex, p_ex = w_ex.split()
@@ -330,6 +308,10 @@ def p_analytical(x: np.ndarray) -> np.ndarray:
 
 
 if __name__ == "__main__":
+
+    def u_boundary(x: np.ndarray) -> np.ndarray:
+        return np.isclose(x[0], 0.0) | np.isclose(x[1], 0.0) | np.isclose(x[1], 1.0)
+
     Ms = [2, 4, 8, 16, 32, 64, 128]
     Ms = [4, 8, 16, 32, 64]
     hs = np.asarray([1 / M for M in Ms])
@@ -338,7 +320,7 @@ if __name__ == "__main__":
     rates = np.zeros((len(up_dim), len(Ms) - 1), dtype=dolfinx.default_scalar_type)
 
     for i, (u_dim, p_dim) in enumerate(up_dim):
-        errors = compute_errors(Ms, u_dim, p_dim)
+        errors = compute_errors(Ms, u_dim, p_dim, u_boundary)
 
         rate = np.log(errors[1:] / errors[:-1]) / np.log(hs[1:] / hs[:-1])
         rates[i] = rate
