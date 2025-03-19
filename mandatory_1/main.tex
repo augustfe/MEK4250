@@ -10,9 +10,11 @@
 \usepackage{subcaption}
 % \geometry{margin=1in}
 
+\usepackage{comment}
 \usepackage{enumitem}
 
 \usepackage{hyperref}
+\usepackage[capitalise]{cleveref}
 \usepackage{xcolor}
 \hypersetup{ % this is just my personal choice, feel free to change things
     colorlinks,
@@ -79,8 +81,11 @@
     \end{solutionTemp}
 }
 
+\numberwithin{equation}{solutionTemp}
+
 \DeclarePairedDelimiter\abs{\lvert}{\rvert}%
 \DeclarePairedDelimiter\norm{\lVert}{\rVert}%
+\newcommand*\diff{\mathop{}\!\mathrm{d}}
 
 \title{
     MEK4250\\
