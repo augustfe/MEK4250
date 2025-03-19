@@ -5,10 +5,10 @@ import dolfinx
 import numpy as np
 import pyvista
 import ufl
-from dolfinx import fem, la
+from dolfinx import fem
 from dolfinx.fem.petsc import LinearProblem
 from mpi4py import MPI
-from scipy.sparse.linalg import splu
+from ufl.core import expr
 
 
 def visualize_mixed(mixed_function: fem.Function, scale: float = 1.0) -> None:
@@ -236,37 +236,13 @@ def solve_stokes(
     )
     wh = problem.solve()
 
-    w_ex = fem.Function(W)
-    u_ex, p_ex = w_ex.split()
+    # w_ex = fem.Function(W)
+    # u_ex, p_ex = w_ex.split()
 
-    u_ex.interpolate(u_analytical)
-    p_ex.interpolate(p_analytical)
+    # u_ex.interpolate(u_analytical)
+    # p_ex.interpolate(p_analytical)
 
-    return wh, w_ex
-
-
-def L2_error(
-    exact: fem.Function, approx: fem.Function, comm: MPI.Intracomm | None = None
-) -> float:
-    if comm is None:
-        comm = exact.function_space.mesh.comm
-
-    e = exact - approx
-    error = fem.form(ufl.inner(e, e) * ufl.dx)
-    E = np.sqrt(comm.allreduce(fem.assemble_scalar(error), MPI.SUM))
-    return E
-
-
-def H1_error(
-    exact: fem.Function, approx: fem.Function, comm: MPI.Intracomm | None = None
-) -> float:
-    if comm is None:
-        comm = exact.function_space.mesh.comm
-
-    e = exact - approx
-    error = fem.form(ufl.inner(ufl.grad(e), ufl.grad(e)) * ufl.dx)
-    E = np.sqrt(comm.allreduce(fem.assemble_scalar(error), MPI.SUM))
-    return E
+    return wh, (u_ufl, p_ufl)
 
 
 def compute_errors(
@@ -282,12 +258,14 @@ def compute_errors(
         mesh = setup_mesh(M)
         comm = mesh.comm
         W = setup_function_space(mesh, u_dim, p_dim)
-        wh, w_ex = solve_stokes(mesh, W, u_boundary)
+        wh, w_ufl = solve_stokes(mesh, W, u_boundary)
 
         u_h, p_h = wh.split()
-        u_ex, p_ex = w_ex.split()
+        u_h = wh.sub(0).collapse()
+        p_h = wh.sub(1).collapse()
+        u_ufl, p_ufl = w_ufl
 
-        E = H1_error(u_ex, u_h, comm) + L2_error(p_ex, p_h, comm)
+        E = H1_error(u_h, u_ufl) + L2_error(p_h, p_ufl)
         errors.append(E)
 
         if comm.rank == 0:
@@ -305,6 +283,95 @@ def u_analytical(x: np.ndarray) -> np.ndarray:
 
 def p_analytical(x: np.ndarray) -> np.ndarray:
     return np.sin(2 * np.pi * x[0])
+
+
+def raised_error(
+    uh: fem.Function,
+    u_ex: expr.Expr | Callable[[np.ndarray], np.ndarray],
+    degree_raise: int = 3,
+) -> fem.Function:
+    """Setup the error function, by raising the degree.
+
+    Based on https://jsdokken.com/dolfinx-tutorial/chapter4/convergence.html
+
+    Args:
+        uh (dolfinx.fem.Function): The numerical solution.
+        u_ex (ufl.Coefficient | Callable[[np.ndarray], np.ndarray]): The exact solution.
+        degree_raise (int, optional): The degree raise for the space. Defaults to 3.
+
+    Returns:
+        dolfinx.fem.Function: The error function.
+    """
+    org_W = uh.function_space
+    degree = org_W.ufl_element().degree
+    family = org_W.ufl_element().family_name
+    shape = org_W.value_shape
+    mesh = org_W.mesh
+    W = fem.functionspace(mesh, (family, degree + degree_raise, shape))
+
+    u_W = fem.Function(W)
+    u_W.interpolate(uh)
+
+    u_ex_W = fem.Function(W)
+    if not isinstance(u_ex, expr.Expr):
+        u_ex_W.interpolate(u_ex)
+    else:
+        u_expr = fem.Expression(u_ex, W.element.interpolation_points())
+        u_ex_W.interpolate(u_expr)
+
+    e_W = fem.Function(W)
+    e_W.x.array[:] = u_W.x.array - u_ex_W.x.array
+
+    return e_W
+
+
+def L2_error(
+    uh: fem.Function,
+    u_ex: expr.Expr | Callable[[np.ndarray], np.ndarray],
+    degree_raise: int = 3,
+    dOmega: ufl.Measure = ufl.dx,
+) -> float:
+    """Compute the L2 error.
+
+    Args:
+        uh (dolfinx.fem.Function): The numerical solution.
+        u_ex (ufl.Coefficient | Callable[[np.ndarray], np.ndarray]): The exact solution.
+        degree_raise (int, optional): The degree raise for the space. Defaults to 3.
+        dOmega (ufl.Measure, optional): The measure for the domain. Defaults to ufl.dx.
+
+    Returns:
+        float: The L2 error.
+    """
+    comm: MPI.Comm = uh.function_space.mesh.comm
+    e_W = raised_error(uh, u_ex, degree_raise)
+    error = fem.form(ufl.inner(e_W, e_W) * dOmega)
+    E = np.sqrt(comm.allreduce(fem.assemble_scalar(error), MPI.SUM))
+    return E
+
+
+def H1_error(
+    uh: fem.Function,
+    u_ex: expr.Expr | Callable[[np.ndarray], np.ndarray],
+    degree_raise: int = 3,
+    dOmega: ufl.Measure = ufl.dx,
+) -> float:
+    """Compute the H1 error.
+
+    Args:
+        uh (dolfinx.fem.Function): The numerical solution.
+        u_ex (ufl.Coefficient | Callable[[np.ndarray], np.ndarray]): The exact solution.
+        degree_raise (int, optional): The degree raise for the space. Defaults to 3.
+        dOmega (ufl.Measure, optional): The measure for the domain. Defaults to ufl.dx.
+
+    Returns:
+        float: The H1 error.
+    """
+    comm: MPI.Comm = uh.function_space.mesh.comm
+    e_W = raised_error(uh, u_ex, degree_raise)
+    g_e_W = ufl.grad(e_W)
+    error = fem.form(ufl.inner(g_e_W, g_e_W) * dOmega)
+    E = np.sqrt(comm.allreduce(fem.assemble_scalar(error), MPI.SUM))
+    return E
 
 
 if __name__ == "__main__":

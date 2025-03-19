@@ -1,3 +1,5 @@
+from collections.abc import Callable
+
 import dolfinx
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,6 +13,7 @@ from stokes import (
     solve_stokes,
     visualize_mixed,
 )
+from ufl.core import expr
 
 
 def visualize_error(wh: dolfinx.fem.Function, w_ex: dolfinx.fem.Function) -> None:
@@ -59,15 +62,42 @@ def compute_convergence_of_approx() -> None:
         plt.close(fig)
 
 
-def compute_shear(wh: dolfinx.fem.Function, w_ex: dolfinx.fem.Function) -> float:
-    W = wh.function_space
-    mesh = W.mesh
+def raised_shear(
+    uh: fem.Function,
+    u_ex: expr.Expr | Callable[[np.ndarray], np.ndarray],
+    degree_raise: int = 3,
+):
+    org_W = uh.function_space
+    degree = org_W.ufl_element().degree
+    family = org_W.ufl_element().family_name
+    shape = org_W.value_shape
+    mesh = org_W.mesh
     comm: MPI.Comm = mesh.comm
-    # ds = ufl.Measure("ds", domain=mesh)
+    W = fem.functionspace(mesh, (family, degree + degree_raise, shape))
+
+    u_W = fem.Function(W)
+    u_W.interpolate(uh)
+
+    u_ex_W = fem.Function(W)
+    if isinstance(u_ex, expr.Expr):
+        u_expr = fem.Expression(u_ex, W.element.interpolation_points())
+        u_ex_W.interpolate(u_expr)
+    else:
+        u_ex_W.interpolate(u_ex)
+
+    # t = ufl.as_vector([0, 1])
+    # Variable tangential direction, in order to switch boundary
+    n = ufl.FacetNormal(mesh)
+    t = ufl.as_vector([n[1], -n[0]])
+
+    shear_h = ufl.dot(ufl.grad(u_W), t)
+    shear_ex = ufl.dot(ufl.grad(u_ex_W), t)
+
     boundary_facets = dolfinx.mesh.locate_entities_boundary(
         mesh,
         mesh.topology.dim - 1,
-        lambda x: np.isclose(x[0], 0.0),
+        lambda x: np.isclose(x[0], 0.0),  # x = 0 Dirichlet boundary
+        # lambda x: np.isclose(x[1], 0.0), # y = 0 Neumann boundary
     )
     mt = dolfinx.mesh.meshtags(
         mesh,
@@ -76,31 +106,10 @@ def compute_shear(wh: dolfinx.fem.Function, w_ex: dolfinx.fem.Function) -> float
         np.full(boundary_facets.size, 0, dtype=np.int32),
     )
     ds = ufl.Measure("ds", domain=mesh, subdomain_data=mt)
-    x = ufl.SpatialCoordinate(mesh)
-    # t = ufl.as_vector([0, 1])
-    n = ufl.FacetNormal(mesh)
-    t = ufl.as_vector([n[1], -n[0]])
 
-    u_h, _ = wh.split()
-    u_ex, _ = w_ex.split()
-    u_ufl = ufl.as_vector((ufl.sin(ufl.pi * x[1]), ufl.cos(ufl.pi * x[0])))
-
-    # shear_h = ufl.dot(ufl.grad(u_h), t)
-    # shear_ex = ufl.dot(ufl.grad(u_ex), t)
-
-    # Matrix multiplication is overloaded to "*" in UFL
-    shear_h = ufl.grad(u_h) * t
-    shear_ex = ufl.grad(u_ex) * t
-    shear_ufl = ufl.grad(u_ufl) * t
-
-    # shear_h = ufl.dot(ufl.grad(u_h), t)
-    # shear_ufl = ufl.dot(ufl.grad(u_ufl), t)
-
-    e = shear_ufl - shear_h
+    e = shear_ex - shear_h
     error = fem.form(ufl.inner(e, e) * ds(0))
-    # error = fem.form(ufl.inner(ufl.grad(e), ufl.grad(e)) * ds(0))
     E = np.sqrt(comm.allreduce(fem.assemble_scalar(error), MPI.SUM))
-    # print(E)
 
     return E
 
@@ -111,8 +120,10 @@ def compute_all_shear(Ms: list[int], u_dim: int, p_dim: int, u_boundary) -> np.n
     for i, M in enumerate(Ms):
         mesh = setup_mesh(M)
         W = setup_function_space(mesh, u_dim, p_dim)
-        wh, w_ex = solve_stokes(mesh, W, u_boundary)
-        errors[i] = compute_shear(wh, w_ex)
+        wh, w_ufl = solve_stokes(mesh, W, u_boundary)
+        u_h = wh.sub(0).collapse()
+        u_ufl, _ = w_ufl
+        errors[i] = raised_shear(u_h, u_ufl)
 
     return errors
 
@@ -121,10 +132,11 @@ if __name__ == "__main__":
     Ms = [4, 8, 16, 32, 64]
     hs = np.asarray([1 / M for M in Ms])
     up_dim = (
+        (5, 4),
         (4, 3),
-        # (4, 2),
+        (4, 2),
         (3, 2),
-        # (3, 1),
+        (3, 1),
         (2, 1),
     )
     rates = np.zeros((len(up_dim), len(Ms) - 1), dtype=dolfinx.default_scalar_type)
