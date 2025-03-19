@@ -35,7 +35,7 @@
         \int_{0}^{1} u_x \, v  + \alpha u_x \, v_x \, \diff x = \lambda \int_{0}^{1} u \, v \, \diff x.
     \end{equation*}
 
-    This is implemented in \texttt{eigs.py}, resulting in the eigenvalues shown in \cref{fig:eigenvalues}.
+    This is implemented in \texttt{eigs.py}\footnote{\url{https://github.com/augustfe/MEK4250/blob/main/mandatory_1/eigs.py}}, resulting in the eigenvalues shown in \cref{fig:eigenvalues}.
     As we see, adding the diffusion term to the first operator results in $L_3$ having eigenvalues with positive real parts.
 
     \begin{figure}[ht]
@@ -168,7 +168,7 @@
             p &: L_i = k_i + l_i x + m_i y.
         \end{split}
     \end{equation}
-    The Mini element behaves like the $P_1$--$P_1$ element across the boundaries, and as such the Mini element satisfies the conditions in \cref{eq:6.15,eq:6.16,eq:6.17} as well.
+    The Mini element behaves like the $P_1$--$P_1$ element across the boundaries, as the bubble function is zero, and as such the Mini element satisfies the conditions in \cref{eq:6.15,eq:6.16,eq:6.17} as well.
 \end{solution}
 
 \begin{exercise}{6.6}
@@ -203,12 +203,12 @@
     Note that we have changed the sign of $p$ from the original description.
     With the given solution we have
     \begin{align*}
-        h &= \frac{\partial u}{\partial n} - p n \\
+        h &= \frac{\partial u}{\partial n} + p n \\
         &= \pi
         \begin{bmatrix}
             0 & \cos(\pi y) \\
             -\sin(\pi x) & 0
-        \end{bmatrix} n - \sin(2 \pi x) n.
+        \end{bmatrix} n + \sin(2 \pi x) n.
     \end{align*}
     Here, we have Neumann conditions along the right boundary at $x = 1$, such that $n = (1, 0)$.
     Inserting this, we get
@@ -220,7 +220,7 @@
         \end{bmatrix}
         \begin{bmatrix}
             1 \\ 0
-        \end{bmatrix} - \sin(2 \pi)
+        \end{bmatrix} + \sin(2 \pi)
         \begin{bmatrix}
             1 \\ 0
         \end{bmatrix}
@@ -233,7 +233,7 @@
     \end{equation*}
     where $\partial\Omega_D$ consists of the top, bottom and left boundaries.
 
-    The solver is implemented in \texttt{stokes.py}\footnote{Add link to file on GitHub}, and the results are shown in \cref{fig:convergence}.
+    The solver is implemented in \texttt{stokes.py}\footnote{\url{https://github.com/augustfe/MEK4250/blob/main/mandatory_1/stokes.py}}, and the results are shown in \cref{fig:convergence}.
     The expected order of convergence rates is found through
     \begin{equation*}
         \norm{u - h_h}_1 + \norm{p - p_h} \leq C h^k \norm{u}_{k+1} + D h^{\ell + 1} \norm{p}_{\ell + 1},
@@ -288,7 +288,7 @@
     This however leads to the fact that, as far as I can see, we are essentially measuring polynomial interpolation errors, which for a polynomial of degree $k$ is expected to be of degree $k$.
     This is exactly what we see in \cref{fig:wall_shear_stress}, where the approximation is of order 5 for the $P_5$--$P_4$ element, order 4 for the $P_4$--$P_3$ and $P_4$--$P_2$ elements, and order 3 for the $P_3$--$P_2$ and $P_3$--$P_1$ elements, and finally order 2 for the $P_2$--$P_1$ element.
 
-    The computation is done in \texttt{wall\_shear.py}\footnote{Add link to file on GitHub}.
+    The computation is done in \texttt{wall\_shear.py}\footnote{\url{https://github.com/augustfe/MEK4250/blob/main/mandatory_1/wall_shear.py}}.
 
     \begin{figure}[htbp]
         \centering
