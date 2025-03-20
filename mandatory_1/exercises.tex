@@ -285,7 +285,35 @@
     One complicating factor is that we are integrating along the Dirichlet boundary, where the solution is already imposed, leading to in effect measuring rounding errors.
     To handle this, we interpolate the solution and the exact function to a higher degree function space beforehand.
 
-    This however leads to the fact that, as far as I can see, we are essentially measuring polynomial interpolation errors, which for a polynomial of degree $k$ is expected to be of degree $k$.
+    Considering the derivative of the interpolation error of a function $f$ on an interval $[x_0, x_n]$, we have for a Lagrange polynomial $p_n$ interpolating at $x_0 < x_1 < \cdots < x_n$ that
+    \begin{equation*}
+        f^{(k)} - p_n^{(k)} = R_N^{(k)}(x) = \prod_{i = 0}^{N - k} (x - \xi_i) \frac{f^{(n+1)}(\eta)}{(n + 1 - k)!},
+    \end{equation*}
+    for some $\xi_i, \eta \in [x_0, x_k]$.
+    Therefore, for $x \in [x_0, x_k]$ we have
+    \begin{equation*}
+        \abs*{R_n^{(k)}(x)} \leq \abs*{\prod_{i = 0}^{n - k} (x - \xi_i)} \frac{\abs{f^{(n+1)}(\eta)}}{(n + 1 - k)!} \leq h^{n + 1 - k} \frac{\abs{f^{(n+1)}(\eta)}}{(n + 1 - k)!}.
+    \end{equation*}
+    For the first derivative, the error is therefore proportional to $h^{n}$.
+
+    Along the boundary $x = 0$, we have that $u = (\sin(\pi y), 1)$, so can focus on the $x$-component.
+    Letting $f = \sin(\pi y)$ and $p_k$ be the corresponding function in $y$ component of $u_h$, we have that
+    \begin{equation*}
+        \int_{x_0}^{x_n} R_n'(x)^2 \, \diff x \leq \int_{x_0}^{x_n} C^2 h^{2n} \, \diff x = C^2 h^{2n + 1},
+    \end{equation*}
+    for some constant $C$, along one element.
+    For $N$ elements along the boundary, we have
+    \begin{align*}
+        \norm{R_N'}_{L^2}^2
+        &= \int_{0}^{1} R_N'(x)^2 \, \diff x
+        = \sum_{i = 0}^N \int_{x_{i_0}}^{x_{n_{i+1}}} R_N'(x)^2 \, \diff x \\
+        &\leq \sum_{i = 0}^{N} C_i^2 h^{2n + 1}
+        \leq \sum_{i = 0}^{N} C h^{2n + 1}
+        = N C h^{2n + 1} = C h^{2n},
+    \end{align*}
+    where we've used that $h = 1/N$.
+    Finally, we take the square root to get that the error is proportional to $h^n$, such that the expected order of convergence is $n$, where $n$ is the polynomial degree of the velocity.
+
     This is exactly what we see in \cref{fig:wall_shear_stress}, where the approximation is of order 5 for the $P_5$--$P_4$ element, order 4 for the $P_4$--$P_3$ and $P_4$--$P_2$ elements, and order 3 for the $P_3$--$P_2$ and $P_3$--$P_1$ elements, and finally order 2 for the $P_2$--$P_1$ element.
 
     The computation is done in \texttt{wall\_shear.py}\footnote{\url{https://github.com/augustfe/MEK4250/blob/main/mandatory_1/wall_shear.py}}.
