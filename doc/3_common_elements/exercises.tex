@@ -1,1 +1,151 @@
 \section{Some common finite elements}
+
+\begin{exercise}
+    Consider two triangles $T_{0}$ and $T_{1}$ defined by the vertices $(0, 0)$, $(1, 0)$, $(0, 1)$ and $(3, 4)$, $(4, 2)$, $(4, 4)$.
+    Compute the mapping between them.
+\end{exercise}
+
+\begin{solution}
+    Let $x$ and $\hat{x}$ be the coordinates in the reference element $T_{0}$ and the target element $T_{1}$, respectively.
+    We seek then to find the mappings
+    \begin{align*}
+        x &= F_{T_{0}}(\hat{x}) = A_{T_{0}} \hat{x} + x_0, \\
+        \hat{x} &= F_{T_{1}}(x) = A_{T_{1}} x + \hat{x}_0,
+    \end{align*}
+    The Jacobian of the mapping is
+    \begin{equation}
+        \frac{\partial x}{\partial \hat{x}} = J(\hat{x}) = A_{T_{0}}.
+    \end{equation}
+    Enumerating the vertices, we have
+    \begin{align*}
+        x_0 &= (0, 0) & x_1 &= (1, 0) & x_2 &= (0, 1) \\
+        \hat{x}_0 &= (3, 4) & \hat{x}_1 &= (4, 2) & \hat{x}_2 &= (4, 4).
+    \end{align*}
+    We have that
+    \begin{equation*}
+        F_{T_1}(x_0) = A_{T_1}
+        \begin{bmatrix}
+            0 \\
+            0
+        \end{bmatrix}
+        + \hat{x}_0 = \hat{x}_0
+    \end{equation*}
+    Letting $A_{T_1} =
+    \begin{bmatrix}
+        a & b \\
+        c & d
+    \end{bmatrix}$, we have
+    \begin{align*}
+        \hat{x}_1 &=
+        \begin{bmatrix}
+            a & b \\
+            c & d
+        \end{bmatrix}
+        \begin{bmatrix}
+            1 \\
+            0
+        \end{bmatrix} + \hat{x}_0 \\
+        \begin{bmatrix}
+            4 \\
+            2
+        \end{bmatrix}
+        &=
+        \begin{bmatrix}
+            a & b \\
+            c & d
+        \end{bmatrix}
+        \begin{bmatrix}
+            1 \\
+            0
+        \end{bmatrix} +
+        \begin{bmatrix}
+            3 \\
+            4
+        \end{bmatrix} \\
+        \begin{bmatrix}
+            1 \\
+            -2
+        \end{bmatrix}
+        &=
+        \begin{bmatrix}
+            a \\ c
+        \end{bmatrix}
+    \end{align*}
+    Similarly, we find that $(b, c) = \hat{x}_2 - \hat{x}_0 = (1, 0)$, such that
+    \begin{equation*}
+        A_{T_1} =
+        \begin{bmatrix}
+            1 & 1 \\
+            -2 & 0
+        \end{bmatrix}
+    \end{equation*}
+    Then,
+    \begin{align*}
+        \hat{x} &= A_{T_1} x + \hat{x}_0 \\
+        A_{T_1} x &= \hat{x} - \hat{x}_0 \\
+        x &= A_{T_1}^{-1} (\hat{x} - \hat{x}_0) \\
+        x &= A_{T_1}^{-1} \hat{x} - A_{T_1}^{-1} \hat{x}_0 \\
+        x &= A_{T_0} \hat{x} + x_0
+    \end{align*}
+    Then, we need only invert $A_{T_1}$.
+    \begin{align*}
+        \begin{bmatrix}
+            1 & 1 \\
+            -2 & 0
+        \end{bmatrix} \Big\vert
+        \begin{bmatrix}
+            1 & 0 \\
+            0 & 1
+        \end{bmatrix}
+        &\rightarrow
+        \begin{bmatrix}
+            1 & 1 \\
+            0 & 2
+        \end{bmatrix} \Big\vert
+        \begin{bmatrix}
+            1 & 0 \\
+            2 & 1
+        \end{bmatrix}
+        \rightarrow
+        \begin{bmatrix}
+            1 & 1 \\
+            0 & 1
+        \end{bmatrix} \Big\vert
+        \begin{bmatrix}
+            1 & 0 \\
+            1 & \frac{1}{2}
+        \end{bmatrix}
+        \rightarrow
+        \begin{bmatrix}
+            1 & 0 \\
+            0 & 1
+        \end{bmatrix} \Big\vert
+        \begin{bmatrix}
+            0 & -\frac{1}{2} \\
+            1 & \frac{1}{2}
+        \end{bmatrix},
+    \end{align*}
+    such that the inverse mapping is
+    \begin{equation*}
+        A_{T_0} = \frac{1}{2}
+        \begin{bmatrix}
+            0 & -1 \\
+            2 & 1
+        \end{bmatrix}
+    \end{equation*}
+\end{solution}
+
+\begin{exercise}
+    Make a Python code that defines a Hermite element on the unit interval.
+\end{exercise}
+
+\begin{solution}
+    We consider Hermite interpolation onto $k + 1$ points, with a single derivative at each node.
+    That is, they satisfy
+    \begin{equation}
+        \begin{split}
+            d_i(H_j) &= H_j(x_i) = \delta_{ij}, \quad \text{for even } i, j, \\
+            d_i(H_j) &= H_j'(x_i) = \delta_{ij}, \quad \text{for odd } i, j.
+        \end{split}
+    \end{equation}
+\end{solution}
