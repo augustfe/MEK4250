@@ -149,3 +149,63 @@
         \end{split}
     \end{equation}
 \end{solution}
+
+\begin{exercise}
+    Make a Python code that defines a Lagrange element of arbitrary order on the reference triangle consisting of the vertices $(0, 0)$, $(1, 0)$, and $(0, 1)$.
+    Let $\mathbb{P}_k = \{x^i y^j\}$ for $i,j$ such that $i + j \leq k$.
+\end{exercise}
+
+\begin{solution}
+    In order to illustrate the goal, the nodes of the first four Lagrange elements are shown in \cref{fig:lagrange_elements_duplicate}.
+    We firstly need to decide how we are going to compute the polynomials.
+    The easiest method is perhaps to set up the Vandermonde matrix
+    \begin{equation*}
+        \begin{bmatrix}
+            1 & x_0 & y_0 & x_0^2 & x_0 y_0 & y_0^2 & \ldots \\
+            1 & x_1 & y_1 & x_1^2 & x_1 y_1 & y_1^2 & \ldots \\
+            1 & x_2 & y_2 & x_2^2 & x_2 y_2 & y_2^2 & \ldots \\
+            \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \ddots
+        \end{bmatrix},
+    \end{equation*}
+    that is, with all the monomials of the form $x^i y^j$ for $i + j \leq k$, for each of the nodes.
+    Inverting this matrix gives us the coefficients of the Lagrange polynomials.
+
+    \begin{figure}[!h]
+        \centering
+        \input{3_common_elements/lagrange_fig.tex}
+        \caption{Lagrange elements of order up to 4 on the reference triangle.\label{fig:lagrange_elements_duplicate}}
+    \end{figure}
+
+    We would however generally want to avoid inverting matrices, as this is both costly, and can lead to numerical instability.
+    Instead, we can use a definition of the Lagrange polynomials on triangles, analogously to the one-dimensional case.
+    This process is illustrated in \cref{fig:lagrange_elements_2}.
+    The trick is to use the equations for lines in order to zero out the other nodes, in the same way as we use the points directly in the one-dimensional case.
+
+    We denote the points on the triangle by a triplet $(i, j, k)$, in reference to the corners, in a manor such that $i + j + k = n$, where $n$ is the order of the polynomial.
+    In the example, we wish to find the Lagrange polynomial which is equal to $1$ at the point $(\frac{1}{4}, \frac{1}{4})$, which corresponds to the triplet $(2, 1, 1)$.
+    This already contains the information about which lines we need, namely the two diagonal lines above, the one vertical line to the left, and the one horizontal line below.
+    These lines are marked with a thick line in the figure.
+
+    Multiplying the equations for these lines together gives us the polynomial
+    \begin{equation*}
+        p(x, y) = (x + y - 1)\left(x + y - \tfrac{3}{4}\right)xy,
+    \end{equation*}
+    which indeed is zero at all other nodes.
+    It does not however equal $1$ at our desired point, which is easily fixed by normalizing the value, giving
+    \begin{equation*}
+        \ell_{211}(x, y) = \frac{
+            (x + y - 1)\left(x + y - \tfrac{3}{4}\right)xy
+        }{
+            \left(\frac{1}{4} + \frac{1}{4} - 1\right)\left(\frac{1}{4} + \frac{1}{4} - \frac{3}{4}\right)\left(\frac{1}{4}\right)^2
+        }
+        = 128xy(x + y - 1)\left(x + y - \tfrac{3}{4}\right).
+    \end{equation*}
+
+    \begin{figure}[!h]
+        \centering
+        \input{3_common_elements/one_triangle.tex}
+        \caption{Lagrange elements of order up to 4 on the reference triangle.\label{fig:lagrange_elements_2}}
+    \end{figure}
+
+    This process is implemented in \verb|lagrange.py|.
+\end{solution}

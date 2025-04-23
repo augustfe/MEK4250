@@ -1,0 +1,32 @@
+\begin{tikzpicture}[scale=7]
+    % Draw horizontal lines
+    \foreach \i in {0, ..., 4} {
+        % \draw[myblue, ultra thick] (A) -- ($(\i/4, 0)$);
+        \draw[myblue, ultra thick, dashed] ($(0, \i/4)$) -- ($(1 - \i/4, \i/4)$);
+    }
+
+    % Draw vertical lines
+    \foreach \i in {0, ..., 4} {
+        % \draw[myblue, ultra thick] (A) -- ($(\i/4, 0)$);
+        \draw[myblue, ultra thick, dashed] ($(\i/4, 0)$) -- ($(\i/4, 1 - \i/4)$);
+    }
+
+    % Draw diagonal lines
+    \foreach \i in {0, ..., 4} {
+        % \draw[myblue, ultra thick] (A) -- ($(\i/4, 0)$);
+        \draw[myblue, ultra thick, dashed] ($(0, 1 - \i/4)$) -- ($(1 - \i/4, 0)$);
+    }
+
+    \draw[ultra thick] (1, 0) -- (0, 1);
+    \draw[ultra thick] (3/4, 0) -- (0, 3/4);
+    \draw[ultra thick] (0, 0) -- (0, 1);
+    \draw[ultra thick] (0, 0) -- (1, 0);
+
+    \fill[red] (1/4, 1/4) circle (0.5pt);
+
+    \foreach \i in {0, ..., \the\numexpr 3 + 1\relax} {
+        \foreach \j in {0, ..., \the\numexpr 3 + 1 - \i\relax} {
+            \node[above right] at (\i/4, \j/4) {$\the\numexpr 4 - \i - \j\relax\i\j$};
+        }
+    }
+\end{tikzpicture}
