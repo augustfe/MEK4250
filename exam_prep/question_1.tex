@@ -1,0 +1,78 @@
+\section{Weak formulation and finite element error estimation}
+\subsection*{Problem description}
+Formulate a finite element method for the Poisson problem with a variable coefficient $\kappa : \Omega \to \mathbb{R}^{d \times d}$.
+Assume that $\kappa$ is positive and symmetric.
+Show that Lax--Milgram's theorem is satisfied. % chktex 8
+Consider extensions to e.g.\ convection-diffusion equation and the elasticity equation.
+Derive \textit{a priori} error estimates in terms of Cea's lemma for the finite element method in the energy norm.
+Describe how to perform an estimation of convergence rates.
+
+\subsection{Weak formulation}
+The Poisson problem with a variable coefficient $\kappa$ is given by
+\begin{equation}
+    \begin{split}
+        -\nabla \cdot (\kappa \nabla u) &= f \quad \text{in } \Omega, \\
+        u &= g \quad \text{on } \partial\Omega_D, \\
+        \kappa \frac{\partial u}{\partial n} &= h \quad \text{on } \partial\Omega_N,
+    \end{split}
+\end{equation}
+with $\partial\Omega_D$ and $\partial\Omega_N$ disjoint parts of the boundary $\partial\Omega$.
+Here, $\partial\Omega_D$ denotes the Dirichlet boundary, while $\partial\Omega_N$ denotes the Neumann boundary.
+
+Setting up the weak formulation roughly follows the following steps:
+\begin{enumerate}
+    \item Multiply with a test function $v$ and integrate over the domain $\Omega$
+
+    \item Integrate by parts, and apply Green's lemma.
+
+    \item Apply the boundary conditions.
+\end{enumerate}
+Multiplying with a test function $v$ and integrating over the domain $\Omega$ gives us
+\begin{equation}
+    \int_\Omega -\nabla \cdot (\kappa \nabla u) \, v \, \diff x = \int_\Omega f \, v \, \diff x.
+\end{equation}
+This is however not ideal, as we are now required to have $u \in H^2(\Omega)$, which is not ideal.
+We therefore apply Green's lemma to the left-hand side, which gives us
+\begin{equation}
+    \int_\Omega -\nabla \cdot (\kappa \nabla u) \, v \, \diff x
+    = \int_\Omega \kappa \nabla u \cdot \nabla v \, \diff x - \int_{\partial\Omega} \kappa \frac{\partial u}{\partial n} \, v \, \diff s.
+\end{equation}
+This eases the requirements on $u$, as we now only require $u \in H^1(\Omega)$, while strengthening the requirements on $v$ to $v \in H^1(\Omega)$.
+
+We can now apply the boundary conditions.
+Splitting the boundary integral into two parts, we have
+\begin{equation}
+    \int_{\partial\Omega} \kappa \frac{\partial u}{\partial n} \, v \, \diff s = \int_{\partial\Omega_D} \kappa \frac{\partial u}{\partial n} \, v \, \diff s + \int_{\partial\Omega_N} \kappa \frac{\partial u}{\partial n} \, v \, \diff s.
+\end{equation}
+As we have a section of Dirichlet boundary, we need not solve for $u$ here, as we know the value of $u$ on this section.
+We may therefore set $v = 0$ on $\partial\Omega_D$ by having $v \in H_0^1(\Omega)$, which gives us
+\begin{equation}
+    \int_{\partial\Omega_D} \kappa \frac{\partial u}{\partial n} \, v \, \diff s + \int_{\partial\Omega_N} \kappa \frac{\partial u}{\partial n} \, v \, \diff s
+    = \int_{\partial\Omega_N} h \, v \, \diff s.
+\end{equation}
+
+This gives us the weak formulation for the Poisson problem
+\begin{equation}
+    \int_\Omega \kappa \nabla u \cdot \nabla v \, \diff x = \int_\Omega f \, v \, \diff x + \int_{\partial\Omega_N} h \, v \, \diff s.
+\end{equation}
+
+\subsection{Lax--Milgram's theorem} % chktex 8
+Lax--Milgram's theorem states: % chktex 8
+\begin{theorem}
+    Let $V$ be a Hilbert space, $a(\cdot, \cdot)$ be a bilinear form, $L(\cdot)$ be a linear form, and let the following three conditions be satisfied:
+    \begin{enumerate}
+        \item $a(u, u) \geq \alpha \norm{u}_V^2$ for all $u \in V$, where $\alpha > 0$ is a constant.
+
+        \item $a(u, v) \leq C \norm{u}_V \norm{v}_V$ for all $u, v \in V$, where $C > 0$ is a constant.
+
+        \item $L(v) \leq D \norm{v}_V$ for all $v \in V$, where $D > 0$ is a constant.
+    \end{enumerate}
+    Then, the problem of finding $u \in V$ such that
+    \begin{equation}
+        a(u, v) = L(v) \quad \forall v \in V
+    \end{equation}
+    is well-posed in the sense that there exists a unique solution with the stability condition
+    \begin{equation}
+        \norm{u}_V \leq \frac{C}{\alpha} \norm{L}_{V^*}.
+    \end{equation}
+\end{theorem}

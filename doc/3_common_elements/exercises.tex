@@ -209,3 +209,29 @@
 
     This process is implemented in \verb|lagrange.py|.
 \end{solution}
+
+\begin{exercise}
+    Check that the interpolation result of the Bramble-Hilbert lemma 2.4 applies to the Lagrange interpolation on the unit line.
+    Consider for example a function $f(x) = \sin(x)$ on the unit interval.
+    The function $f$ is a good example as it cannot be expressed as a polynomial of finite order, but can be approximated arbitrarily well.
+\end{exercise}
+
+\begin{solution}
+    For a polynomial $p_n(x)$ that interpolates a function $f$ at $n + 1$ distinct points $x_0, \ldots, x_n \in [0, 1]$, we have that for each $x \in [0, 1]$ there exists $\xi \in [0, 1]$ such that
+    \begin{equation*}
+        f(x) - p_n(x) = \frac{f^{(n+1)}(\xi)}{(n+1)!} \prod_{i=0}^{n} (x - x_i).
+    \end{equation*}
+    The Bramble-Hilbert lemma states
+    \begin{equation*}
+        \abs{u - P_m u}_{k,p} \leq C h^{m - k} \abs{u}_{m,p}
+        \quad
+        \text{for } k = 2, \ldots, m \text{ and } p \geq 1.
+    \end{equation*}
+
+    In this exercise, we then have
+    \begin{align*}
+        |\sin - p_n|_{k, p} &= \left(
+            \int_{0}^{1} \abs*{\frac{\partial^k}{\partial x^k}(\sin(x) - p_n(x))}^p \, dx
+        \right)^{\frac{1}{p}}
+    \end{align*}
+\end{solution}

@@ -1,0 +1,69 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{amsmath, amsthm, amsfonts, amssymb}
+\usepackage{mathtools}
+\usepackage{microtype}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+\newcommand*\diff{\mathop{}\!\mathrm{d}}
+
+\usepackage{caption}
+\usepackage{subcaption}
+% \geometry{margin=1in}
+
+\usepackage{enumitem}
+
+\usepackage{hyperref}
+\usepackage{xcolor}
+\hypersetup{ % this is just my personal choice, feel free to change things
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black},
+}
+\usepackage[capitalise]{cleveref}
+
+\usepackage[T1]{fontenc}
+\usepackage{sectsty}
+
+\sectionfont{\scshape\mdseries\large}
+\subsectionfont{\centering\scshape\bfseries\normalsize}
+\numberwithin{equation}{section}
+
+\colorlet{myred}{red!20}
+\colorlet{myblue}{blue!20}
+\colorlet{mypurple}{purple!40}
+\colorlet{myorange}{orange!20}
+\colorlet{myteal}{teal!35}
+
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}%
+
+\newtheorem{theorem}{Theorem}
+
+\title{
+    MEK4250\\
+    \small{Exam preperation for Finite Elements in Computational Mechanics}
+}
+\author{August Femtehjell}
+\date{Spring 2025}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\begin{abstract}
+    This document contains my preperation for the final oral exam for the course MEK4250--Finite Elements in Computational Mechanics, taught at the University of Oslo in the spring of 2025.
+    The code for everything, as well as this document, can be found at my GitHub repository: \url{https://github.com/augustfe/MEK4250}.
+\end{abstract}
+
+\include{formality}
+
+\include{question_1}
+
+\end{document}
