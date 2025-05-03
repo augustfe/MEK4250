@@ -1,0 +1,138 @@
+\section{Discretization of Convection-Diffusion}
+Derive a proper variational formulation of the convection-diffusion problem.
+Derive sufficient conditions that make the problem well-posed.
+Discuss why oscillations appear for standard Galerking methods and show how SUPG methods resolve these problems.
+Discuss also approximation properties in light of Cea's lemma.
+
+\subsection{Weak form of the Convection-Diffusion equation}
+Here, we consider the convection-diffusion equation given by
+\begin{equation}
+    \begin{split}
+        -\mu \Delta u + w \cdot \nabla u &= f, \quad \text{in } \Omega,\\
+        u &= g, \quad \text{on } \partial\Omega,
+    \end{split}
+\end{equation}
+assuming Dirichlet conditions on the whole boundary.
+
+In order to derive the weak form, we follow the steps:
+\begin{enumerate}
+    \item Multiply the equation with a test function $v$ and integrate.
+
+    \item Integrate by parts, and apply Gauss--Green's lemma. % chktex 8
+
+    \item Apply the boundary conditions.
+\end{enumerate}
+The first step gives us
+\begin{equation}
+    \int_\Omega -\mu \Delta u \, v + w \cdot \nabla u \, v \, \diff x = \int_\Omega f \, v \, \diff x.
+\end{equation}
+Then, we use integration by parts on the first term in order to ease the requirement of $u \in H^2(\Omega)$ to $u \in H^1(\Omega)$, while strengthening the requirement on $v$ from $v \in L_2(\Omega)$ to $v \in H^1(\Omega)$.
+This gives us
+\begin{equation}
+    \int_{\Omega} \mu \nabla u \cdot \nabla v  + w \cdot \nabla u \, v \, \diff x = \int_{\Omega} f \, v \, \diff x + \int_{\partial\Omega} \mu \frac{\partial u}{\partial n} v \, \diff s.
+\end{equation}
+Next, we consider the boundary term.
+As the solution is known on the boundary, we need to solve for $u$ on the boundary, and can therefore choose $v \in H_0^1(\Omega)$, such that
+\begin{equation}
+    \int_{\partial\Omega} \mu \frac{\partial u}{\partial n} v \, \diff s
+    = \int_{\partial\Omega} \mu \frac{\partial u}{\partial n} 0 \, \diff s = 0,
+\end{equation}
+effectively removing the boundary term from our formulation.
+
+We can now write the weak form of the convection-diffusion equation as
+\begin{equation}
+    \int_{\Omega} \mu \nabla u \cdot \nabla v + w \cdot \nabla u \, v \, \diff x = \int_{\Omega} f \, v \, \diff x.
+\end{equation}
+The bilinear form is then given by
+\begin{equation}
+    a(u,v) = \int_{\Omega} \mu \nabla u \cdot \nabla v + w \cdot \nabla u \, v \, \diff x,
+\end{equation}
+and the linear form is given by
+\begin{equation}
+    L(v) = \int_{\Omega} f \, v \, \diff x.
+\end{equation}
+The weak form of the problem is then, find $u \in V$ such that
+\begin{equation}
+    a(u,v) = L(v), \quad \forall v \in V.
+\end{equation}
+% Here, we assume that $\kappa$ is symmetric, positive and bounded, and that $w$ is bounded.
+
+\subsection{Well-posedness}
+For well-posedness, we rely on the Lax--Milgram theorem, meaning we have to find sufficient conditions such that: % chktex 8
+\begin{enumerate}
+    \item $a(u, u) \geq \alpha \norm{u}^2_V$ for some $\alpha > 0$ and all $u \in V$.
+    \item $a(u, v) \leq \beta \norm{u}_V \norm{v}_V$ for some $\beta > 0$ and all $u, v \in V$.
+    \item $L(v) \leq D \norm{v}_V$ for some $D > 0$ and all $v \in V$.
+\end{enumerate}
+
+Here, we'll work through the conditions in reverse order, adding conditions as we go.
+For the third condition, we simply have by Cauchy--Schwarz % chktex 8
+\begin{equation}
+    L(v) = \int_\Omega f \, v \, \diff x \leq \norm{f}_{L^2} \norm{v}_{L^2} \leq \norm{f}_{L^2} \norm{v}_1,
+\end{equation}
+showing that we require that $f \in L^2(\Omega)$ in order to satisfy the third condition.
+For the second condition, we apply lifting to $u$, such that we can use Poincaré's inequality.
+We then have
+\begin{align*}
+    a(u, v)
+    &= \int_{\Omega} \mu \nabla u \cdot \nabla v + w \cdot \nabla u \, v \, \diff x \\
+    &\leq \mu \abs{u}_1 \abs{v}_1 + \norm{w}_{L^\infty} \abs{u}_1 \norm{v}_{L^2} \\
+    &\leq \mu \abs{u}_1 \abs{v}_1 + C \norm{w}_{L^\infty} \abs{u}_1 \abs{v}_1 \\
+    &\leq \left( \mu + C \norm{w}_{L^\infty} \right) \abs{u}_1 \abs{v}_1.
+\end{align*}
+As we've applied lifting to $u$, we can assume that $u \in H^1_0(\Omega)$, such that $\abs{u}_1$ is an equivalent norm to $\norm{u}_1$.
+
+Finally, for the first condition, we write
+\begin{equation}
+    a(u, v) = b(u, v) + c_w(u, v),
+\end{equation}
+where $b(u, v) = \int_{\Omega} \mu \nabla u \cdot \nabla v$ and $c_w(u, v) = \int_{\Omega} w \cdot \nabla u \, v$.
+For $b$, we already have
+\begin{equation}
+    b(u, u) = \int_{\Omega} \mu (\nabla u)^2 \, \diff x = \mu \abs{u}_1^2 \geq \frac{\mu}{1 + C} \norm{u}^2_2,
+\end{equation}
+as
+\begin{equation}
+    \norm{u}^2_2 = \abs{u}_1^2 + \norm{u}_{L^2}^2 \leq (1 + C) \abs{u}_1^2.
+\end{equation}
+$c_w$ is a bit more involved, however we start with integration by parts in order to get
+\begin{align*}
+    c_w(u, v)
+    &= \int_{\Omega} w \cdot \nabla u \, v \, \diff x \\
+    &= -\int_{\Omega} w \cdot \nabla v \, u \diff x - \int_\Omega \nabla \cdot w \, u \, v \, \diff x + \int_{\partial\Omega} w \cdot n \, u \, v \, \diff s.
+\end{align*}
+The boundary term vanishes as we've applied lifting, and if we assume that $\nabla \cdot w = 0$ such that we have incompressibility, we are left with
+\begin{equation}
+    c_w(u, v) = \int_{\Omega} w \cdot \nabla u \, v \, \diff x = -\int_{\Omega} w \cdot \nabla v \, u \diff x = -c_w(v, u).
+\end{equation}
+$c_w$ is then skew-symmetric, such that we have
+\begin{equation}
+    c_w(u, u) = -c_w(u, u) = 0.
+\end{equation}
+The convection-diffusion equation is then well-posed if we assume that $w$ is bounded and incompressible, such that $\nabla \cdot w = 0$.
+
+\subsection{Oscillations in Galerkin methods}
+In order to illustrate the oscillations, we consider a simplified scenario in one dimension, where we set $w = -1$.
+We then have the equation
+\begin{equation}
+    \begin{split}
+        -\mu u_{xx} - u_x &= 0, \\
+        u(0) &= 0, \\
+        u(1) &= 1.
+    \end{split}
+\end{equation}
+The variational problem is then, find $u \in H^1_0(0, 1)$ such that
+\begin{equation}
+    \int_{0}^{1} \mu u_x v_x - u_x v \, \diff x = 0, \quad \forall v \in H^1_0(0, 1).
+\end{equation}
+Using first order Lagrange elements, we have that the discretization is equivalent to the central finite difference scheme
+\begin{equation}
+    -\frac{\mu}{h^2} \left[
+        u_{i+1} - 2u_i + u_{i-1}
+    \right]
+    - \frac{w}{2h} \left[
+        u_{i+1} - u_{i-1}
+    \right] = 0, \quad i = 1, \ldots, N-1,
+\end{equation}
+which for $\mu = 0$ reduces to $u_{i + 1} = u_{i - 1} = u_{i - 3} = \ldots$ and $u_{i + 2} = u_i = u_{i - 2} = u_{i - 4} = \ldots$.
+This is the cause of the oscillations, as if $N$ is odd, then we'll have that all terms of the form $u_{2i} = 0$, while $u_{2i + 1} = 1$, determined by the boundary conditions.

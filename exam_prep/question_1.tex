@@ -76,3 +76,151 @@ Lax--Milgram's theorem states: % chktex 8
         \norm{u}_V \leq \frac{C}{\alpha} \norm{L}_{V^*}.
     \end{equation}
 \end{theorem}
+
+We can now show that Lax--Milgram's theorem is satisfied for the weak formulation of the Poisson problem. % chktex 8
+We have the bilinear form
+\begin{equation}
+    a(u, v) = \int_\Omega \kappa \nabla u \cdot \nabla v \, \diff x,
+\end{equation}
+and the linear form
+\begin{equation}
+    L(v) = \int_\Omega f \, v \, \diff x + \int_{\partial\Omega_N} h \, v \, \diff s.
+\end{equation}
+We can now show that the three conditions of Lax--Milgram's theorem are satisfied. % chktex 8
+
+Firstly we have that
+\begin{align*}
+    a(u, u)
+    &= \int_\Omega \kappa \nabla u \cdot \nabla u \, \diff x
+    = \int_\Omega (\nabla u)^T \kappa^T \nabla u \, \diff x \\
+    &= \int_\Omega (\nabla u)^T \kappa \nabla u \, \diff x
+    \geq \int_\Omega k_0 \abs{\nabla u}^2 \, \diff x \\
+    &= k_0 \abs{u}^2_1
+    \geq \alpha \norm{u}_1^2
+\end{align*}
+where we've first used the fact that $\kappa$ is symmetric, and then that $\kappa$ is positive, and finally that the $H^1_0$ semi-norm is equivalent to the $H^1_0$ norm.
+
+For the second point, we firstly show that $a(\cdot, \cdot)$ defines an inner product, assuming that $\kappa$ is bounded.
+The inequality then follows simply from the Cauchy--Schwarz inequality. % chktex 8
+In order to show that $a(\cdot, \cdot)$ is symmetric, we simply have
+\begin{equation}
+    a(u, v) = \int_\Omega \kappa \nabla u \cdot \nabla v \, \diff x
+    = \int_\Omega (\nabla v)^T \kappa \nabla u \, \diff x
+    = a(v, u).
+\end{equation}
+We can now show that $a(u, v) \leq C \norm{u}_V \norm{v}_V$.
+As $\kappa$ is bounded, we have
+\begin{equation}
+    \kappa \xi \cdot \xi \leq k_1 \abs{\xi}^2
+\end{equation}
+for all $\xi \in \mathbb{R}^d$.
+This gives us that
+\begin{equation}
+    a(u, u) = \int_\Omega \kappa \nabla u \cdot \nabla u \, \diff x
+    \leq k_1 \int_\Omega \abs{\nabla u}^2 \, \diff x
+    \leq k_1 \abs{u}_1^2.
+\end{equation}
+We then have that
+\begin{gather*}
+    a(u, v)^2 \leq a(u, u) a(v, v) = k_1^2 \abs{u}_1^2 \abs{v}_1^2 \\
+    a(u, v) \leq k_1 \abs{u}_1 \abs{v}_1
+\end{gather*}
+Additionally, for $H^1_0$ we have
+\begin{align*}
+    \norm{u}_1^2 = \norm{u}_{L^2}^2 + \abs{u}_1^2
+    \leq C \abs{u}_1^2 + \abs{u}_1^2
+    = (1 + C) \abs{u}_1^2
+\end{align*}
+by Poincaré's lemma, which gives us
+\begin{equation}
+    a(u, v) \leq k_1 \abs{u}_1 \abs{v}_1
+    \leq \frac{k_1}{1 + C} \norm{u}_1 \norm{v}_1.
+\end{equation}
+
+Lastly, we have
+\begin{align*}
+    L(v)
+    &= \int_\Omega f \, v \, \diff x + \int_{\partial\Omega_N} h \, v \, \diff s
+    \leq \norm{f}_{L^2(\Omega)} \norm{v}_{L^2(\Omega)} + \norm{h}_{L^2(\partial\Omega_N)} \norm{v}_{L^2(\partial\Omega_N)} \\
+    &\leq (\norm{f}_{L^2}(\Omega) + \norm{h}_{L^2(\partial\Omega_N)}) \norm{v}_{L^2(\Omega)}
+    \leq D \norm{v}_{L^2(\Omega)}
+    \leq D \norm{v}_1,
+\end{align*}
+showing that the third condition is satisfied as well.
+Here, we assume that $f \in L^2(\Omega)$ and $h \in L^2(\partial\Omega_N)$, which is a reasonable assumption.
+
+\subsection{Extension to convection-diffusion equation}
+The convection-diffusion equation is given by
+\begin{equation}
+    \begin{split}
+        -\nabla \cdot (\kappa \nabla u) + w \cdot \nabla u &= f \quad \text{in } \Omega, \\
+        u &= g \quad \text{on } \partial\Omega_D, \\
+        \kappa \frac{\partial u}{\partial n} &= h \quad \text{on } \partial\Omega_N,
+    \end{split}
+\end{equation}
+where $w$ is the convection term.
+
+{\Large To be continued}
+
+\subsection{Cea's lemma}
+Cea's lemma states that if $u_h$ is the finite element solution, and $u$ is the exact solution, then
+\begin{equation}
+    \norm{u - u_h}_V \leq \frac{C B}{\alpha} h^t \norm{u}_{t + 1},
+\end{equation}
+where $B$ is the constant derived from the polynomial approximation, $h$ is a measure of the mesh size, and $C$ and $\alpha$ are constants from Lax--Milgram's theorem. % chktex 8
+
+Here, we assume that the energy norm is given by
+\begin{equation}
+    \norm{w}_E = a(w, w)^{1/2},
+\end{equation}
+and that we should find an error estimate in this norm.
+We then have
+\begin{align*}
+    \norm{u - u_h}_E^2 &= a(u - u_h, u - u_h) \\
+    &= a(u - u_h, u - v + v - u_h) \qquad v \in V \\
+    &= a(u - u_h, u - v) + \underbrace{a(u - u_h, v - u_h)}_{0 \text{ as } v - u_h \in V} \\
+    &= a(u - u_h, u - v) \\
+    &\leq \norm{u - u_h}_E \norm{u - v}_E.
+\end{align*}
+Dividing by $\norm{u - u_h}_E$ gives us
+\begin{equation}
+    \norm{u - u_h}_E \leq \norm{u - v}_E.
+\end{equation}
+We then further have, choosing $v = I_h u$ as the polynomial approximation of order $t$,
+\begin{align*}
+    \norm{u - I_h u}_E^2 &= a(u - I_h u, u - I_h u) \\
+    &\leq \frac{k_1}{1 + C} \norm{u - I_h u}_1^2 \\
+    &\leq \frac{k_1}{1 + C} (B h^t)^2 \norm{u}_{t + 1}^2.
+\end{align*}
+This finally gives us that
+\begin{equation}
+    \norm{u - u_h}_E \leq \sqrt{\frac{k_1}{1 + C}} B h^t \norm{u}_{t + 1}.
+\end{equation}
+I believe this is what the question is asking for, but I am not sure.
+
+\subsection{Convergence rates}
+We can estimate the convergence rates by looking at the error estimates for varying mesh sizes $h$.
+Considering the error estimates for $h = h_1$ and $h = h_2$, we have
+\begin{equation*}
+    \norm{u - u_{h_1}}_E \leq C h_1^t \norm{u}_{t + 1}
+    \quad\text{and}\quad
+    \norm{u - u_{h_2}}_E \leq C h_2^t \norm{u}_{t + 1}.
+\end{equation*}
+This gives
+\begin{align*}
+    \frac{\norm{u - u_{h_2}}_E}{\norm{u - u_{h_1}}_E}
+    &\leq \frac{C h_2^t \norm{u}_{t + 1}}{C h_1^t \norm{u}_{t + 1}} \\
+    &= \left(\frac{h_2}{h_1}\right)^t.
+\end{align*}
+Taking the logarithm of both sides gives us
+\begin{align*}
+    \log \left(\frac{\norm{u - u_{h_2}}_E}{\norm{u - u_{h_1}}_E}\right)
+    &\leq t \log \left(\frac{h_2}{h_1}\right) \\
+    \frac{
+        \log \left(\frac{\norm{u - u_{h_2}}_E}{\norm{u - u_{h_1}}_E}\right)
+    }{
+        \log \left(\frac{h_2}{h_1}\right)
+    }
+    &\leq t.
+\end{align*}
+If we solve for varying mesh sizes $\{h_i\}_{i=1}^n$, keeping $h_{i+1} / h_i$ constant, we get a series of lower bounds for the convergence rate $t$.
