@@ -1,0 +1,130 @@
+\section{Discretization of Stokes}
+Derive a proper variational formulation of the Stokes problem.
+Discuss the four Brezzi conditions that are needed for a well-posed continuous problem.
+Explain why oscillations might appear in the pressure for some discretization techniques.
+Present expected approximation properties for mixed elements that satisfy the inf-sup condition, and discuss a few examples like e.g.\ Taylor--Hood, Mini, and Crouzeix--Raviart. % chktex 8
+Discuss also how one might cirumvent the inf-sup condition by stabilization.
+
+\subsection{Weak form of Stokes problem}
+The Stokes problem describes the flow of a slowly moving viscous incompressible Newtonian fluid.
+Let $u : \Omega \to \mathbb{R}^n$ be the fluid field, and $p: \Omega \to \mathbb{R}$ be the fluid pressure.
+Stokes problem can then be written as
+\begin{equation}
+    \begin{split}
+        -\Delta u + \nabla p &= f \quad \text{in } \Omega, \\
+        \nabla \cdot u &= 0 \quad \text{in } \Omega, \\
+        u &= g \quad \text{on } \partial\Omega_D, \\
+        \frac{\partial u}{\partial n} - p \, n &= h \quad \text{on } \partial\Omega_N.
+    \end{split}
+\end{equation}
+Here, $f$ is the body forcce, $\partial\Omega_D$ and $\partial\Omega_N$ are the Dirichlet and Neumann boundaries, respectively.
+Additionally, $g$ is the prescribed fluid velocity on the Dirichlet boundary, and $h$ is the surface force or stress on the Neumann boundary.
+
+The presence of the Dirichlet and Neumann boundary conditions lead to a well-posed problem, so long as neither are empty.
+If the Dirichlet condition if empty, the velocity is only determined up to a constant.
+If the Neumann condition is empty, the pressure is only determined up to a constant.
+
+We being by setting up the weak form of the Stokes problem.
+Setting up the weak form amounts to the following steps:
+\begin{enumerate}
+    \item Multiply by test functions and integrate of the domain $\Omega$.
+
+    \item Integration by parts, and apply Gauss--Green's lemma. % chktex 8
+
+    \item Apply the boundary conditions.
+\end{enumerate}
+This leads us to initially have, multiplying the first equation by a test function $v$ and the second equation by a test function $q$,
+\begin{equation}
+    \begin{split}
+        \int_\Omega (-\Delta u + \nabla p) \cdot v \, \diff x &= \int_\Omega f \cdot v \, \diff x \\
+        \int_\Omega (\nabla \cdot u) q \, \diff x &= 0.
+    \end{split}
+\end{equation}
+This is however not ideal, as we would currently be requiring that $u \in H_{g, D}^2$ and $p \in H^1$.
+We therefore apply integration by parts, which yields
+\begin{equation}
+    \int_\Omega (-\Delta u + \nabla p) \cdot v \, \diff x
+    = \int_\Omega \nabla u : \nabla v + p (\nabla \cdot v) \, \diff x
+    + \int_{\partial\Omega} \left(\frac{\partial u}{\partial n} - p n\right) \cdot v \, \diff s.
+\end{equation}
+We then consider the boundary conditions, which yields
+\begin{align*}
+    \int_{\partial\Omega} \left(\frac{\partial u}{\partial n} - p n\right) \cdot v \, \diff s
+    &= {
+        \int_{\partial\Omega_D} \left(\frac{\partial u}{\partial n} - p n\right) \cdot v \, \diff s
+        + \int_{\partial\Omega_N} \left(\frac{\partial u}{\partial n} - p n\right) \cdot v \, \diff s
+    } \\
+    &= {
+        \underbrace{
+            \int_{\partial\Omega_D} \left(\frac{\partial u}{\partial n} - p n\right) \cdot 0 \, \diff s
+        }_{\text{As we choose } v \in H^1_{0, D}}
+        + \int_{\partial\Omega_N} h \cdot v \, \diff s
+    } \\
+    &= \int_{\partial\Omega_N} h \cdot v \, \diff s.
+\end{align*}
+Defining
+\begin{equation}
+    \begin{split}
+        a(u, v) &= \int_{\Omega} \nabla u : \nabla v \, \diff x \\
+        b(v, p) &= \int_{\Omega} p (\nabla \cdot v) \, \diff x \\
+        L(v) &= \int_{\Omega} f \cdot v \, \diff x + \int_{\partial\Omega_N} h \cdot v \, \diff x
+    \end{split}
+\end{equation}
+we can rewrite the weak form of Stokes problem succinctly as:
+Find $(u, p) \in V \times Q$ such that for all $(v, q) \in \hat{V} \times \hat{Q}$
+\begin{equation}
+    \begin{split}
+        a(u, v) - b(v, p) &= L(v), \\
+        b(u, q) &= 0.
+    \end{split}
+\end{equation}
+
+The finite element formulation follows directly from this:
+Find $u_h \in V_{g, h}$ and $p_h \in Q_h$ such that
+\begin{equation}\label{eq:stokes-fem}
+    \begin{split}
+        a(u_h, v_h) + b(p_h, v_h) &= L(v_h) \quad \forall v_h \in V_{0, h}, \\
+        b(q_h, u_h) &= 0 \quad\qquad \forall q_h \in Q_h.
+    \end{split}
+\end{equation}
+
+\subsection{Brezzi conditions}
+For a saddle point problem of the form \cref{eq:stokes-fem} to be well-posed, we require that four conditions are satisfied.
+\begin{enumerate}
+    \item Boundedness of $a$:
+        \begin{equation}
+            a(u_h, v_h) \leq C_1 \norm{u_h}_{V_h} \norm{v_{h}}_{V_h}
+            \quad
+            \forall u_h, v_h \in V_h.
+        \end{equation}
+
+    \item Boundedness of $b$:
+        \begin{equation}
+            b(u_h, q_h) \leq C_2 \norm{u_h}_{V_h} \norm{q_{h}}_{Q_h}
+            \quad
+            \forall {
+                u_h \in V_h,
+                q_h \in Q_h.
+            }
+        \end{equation}
+
+    \item Coersivity of $a$:
+        \begin{equation}
+            a(u_h, u_h) \geq C_3 \norm{u_h}_{V_h}^2
+            \quad
+            \forall u_h \in Z_h,
+        \end{equation}
+        where $Z_h = \{ u_h \in V_h | b(u_h, q_h) = 0 \forall q_h \in Q_h \}$.
+
+    \item ``Coercivity'' of $b$:
+        \begin{equation}
+            \sup_{u_h \in V_h} \frac{
+                b(u_h, q_h)
+            }{
+                \norm{u_h}_{V_h}
+            } \geq C_4 \norm{q_h}_{Q_h}
+            \quad
+            \forall q_h \in Q_h.
+        \end{equation}
+\end{enumerate}
+The first three conditions are easily verified for Stokes problem, while the last one is difficult unless the elements are designed specifically to meet this condition.
