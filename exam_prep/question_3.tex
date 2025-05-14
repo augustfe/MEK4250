@@ -1,303 +1,231 @@
-\section{Discretization of Stokes}
-Derive a proper variational formulation of the Stokes problem.
-Discuss the four Brezzi conditions that are needed for a well-posed continuous problem.
-Explain why oscillations might appear in the pressure for some discretization techniques.
-Present expected approximation properties for mixed elements that satisfy the inf-sup condition, and discuss a few examples like e.g.\ Taylor--Hood, Mini, and Crouzeix--Raviart. % chktex 8
-Discuss also how one might cirumvent the inf-sup condition by stabilization.
+\section{Discretization of Convection-Diffusion}
+Derive a proper variational formulation of the convection-diffusion problem.
+Derive sufficient conditions that make the problem well-posed.
+Discuss why oscillations appear for standard Galerkin methods and show how SUPG methods resolve these problems.
+Discuss also approximation properties in light of Cea's lemma.
 
-\subsection{Weak form of Stokes problem}
-The Stokes problem describes the flow of a slowly moving viscous incompressible Newtonian fluid.
-Let $u : \Omega \to \mathbb{R}^n$ be the fluid field, and $p: \Omega \to \mathbb{R}$ be the fluid pressure.
-Stokes problem can then be written as
+\subsection{Weak form of the Convection-Diffusion equation}
+Here, we consider the convection-diffusion equation given by
 \begin{equation}
     \begin{split}
-        -\Delta u + \nabla p &= f \quad \text{in } \Omega, \\
-        \nabla \cdot u &= 0 \quad \text{in } \Omega, \\
-        u &= g \quad \text{on } \partial\Omega_D, \\
-        \frac{\partial u}{\partial n} - p \, n &= h \quad \text{on } \partial\Omega_N.
+        -\mu \Delta u + w \cdot \nabla u &= f, \quad \text{in } \Omega,\\
+        u &= g, \quad \text{on } \partial\Omega,
     \end{split}
 \end{equation}
-Here, $f$ is the body forcce, $\partial\Omega_D$ and $\partial\Omega_N$ are the Dirichlet and Neumann boundaries, respectively.
-Additionally, $g$ is the prescribed fluid velocity on the Dirichlet boundary, and $h$ is the surface force or stress on the Neumann boundary.
+assuming Dirichlet conditions on the whole boundary.
 
-The presence of the Dirichlet and Neumann boundary conditions lead to a well-posed problem, so long as neither are empty.
-If the Dirichlet condition if empty, the velocity is only determined up to a constant.
-If the Neumann condition is empty, the pressure is only determined up to a constant.
-
-We being by setting up the weak form of the Stokes problem.
-Setting up the weak form amounts to the following steps:
+In order to derive the weak form, we follow the steps:
 \begin{enumerate}
-    \item Multiply by test functions and integrate of the domain $\Omega$.
+    \item Multiply the equation with a test function $v$ and integrate.
 
-    \item Integration by parts, and apply Gauss--Green's lemma. % chktex 8
+    \item Integrate by parts, and apply Gauss--Green's lemma. % chktex 8
 
     \item Apply the boundary conditions.
 \end{enumerate}
-This leads us to initially have, multiplying the first equation by a test function $v$ and the second equation by a test function $q$,
+The first step gives us
 \begin{equation}
-    \begin{split}
-        \int_\Omega (-\Delta u + \nabla p) \cdot v \, \diff x &= \int_\Omega f \cdot v \, \diff x \\
-        \int_\Omega (\nabla \cdot u) q \, \diff x &= 0.
-    \end{split}
+    \int_\Omega -\mu \Delta u \, v + w \cdot \nabla u \, v \, \diff x = \int_\Omega f \, v \, \diff x.
 \end{equation}
-This is however not ideal, as we would currently be requiring that $u \in H_{g, D}^2$ and $p \in H^1$.
-We therefore apply integration by parts, which yields
+Then, we use integration by parts on the first term in order to ease the requirement of $u \in H^2(\Omega)$ to $u \in H^1(\Omega)$, while strengthening the requirement on $v$ from $v \in L_2(\Omega)$ to $v \in H^1(\Omega)$.
+This gives us
 \begin{equation}
-    \int_\Omega (-\Delta u + \nabla p) \cdot v \, \diff x
-    = \int_\Omega \nabla u : \nabla v + p (\nabla \cdot v) \, \diff x
-    + \int_{\partial\Omega} \left(\frac{\partial u}{\partial n} - p n\right) \cdot v \, \diff s.
+    \int_{\Omega} \mu \nabla u \cdot \nabla v  + w \cdot \nabla u \, v \, \diff x = \int_{\Omega} f \, v \, \diff x + \int_{\partial\Omega} \mu \frac{\partial u}{\partial n} v \, \diff s.
 \end{equation}
-We then consider the boundary conditions, which yields
+Next, we consider the boundary term.
+As the solution is known on the boundary, we need to solve for $u$ on the boundary, and can therefore choose $v \in H_0^1(\Omega)$, such that
+\begin{equation}
+    \int_{\partial\Omega} \mu \frac{\partial u}{\partial n} v \, \diff s
+    = \int_{\partial\Omega} \mu \frac{\partial u}{\partial n} 0 \, \diff s = 0,
+\end{equation}
+effectively removing the boundary term from our formulation.
+
+We can now write the weak form of the convection-diffusion equation as
+\begin{equation}
+    \int_{\Omega} \mu \nabla u \cdot \nabla v + w \cdot \nabla u \, v \, \diff x = \int_{\Omega} f \, v \, \diff x.
+\end{equation}
+The bilinear form is then given by
+\begin{equation}
+    a(u,v) = \int_{\Omega} \mu \nabla u \cdot \nabla v + w \cdot \nabla u \, v \, \diff x,
+\end{equation}
+and the linear form is given by
+\begin{equation}
+    L(v) = \int_{\Omega} f \, v \, \diff x.
+\end{equation}
+The weak form of the problem is then, find $u \in V$ such that
+\begin{equation}
+    a(u,v) = L(v), \quad \forall v \in V.
+\end{equation}
+% Here, we assume that $\kappa$ is symmetric, positive and bounded, and that $w$ is bounded.
+
+\subsection{Well-posedness}
+For well-posedness, we rely on the Lax--Milgram theorem, meaning we have to find sufficient conditions such that: % chktex 8
+\begin{enumerate}
+    \item $a(u, u) \geq \alpha \norm{u}^2_V$ for some $\alpha > 0$ and all $u \in V$.
+    \item $a(u, v) \leq \beta \norm{u}_V \norm{v}_V$ for some $\beta > 0$ and all $u, v \in V$.
+    \item $L(v) \leq D \norm{v}_V$ for some $D > 0$ and all $v \in V$.
+\end{enumerate}
+
+Here, we'll work through the conditions in reverse order, adding conditions as we go.
+For the third condition, we simply have by Cauchy--Schwarz % chktex 8
+\begin{equation}
+    L(v) = \int_\Omega f \, v \, \diff x \leq \norm{f}_{L^2} \norm{v}_{L^2} \leq \norm{f}_{L^2} \norm{v}_1,
+\end{equation}
+showing that we require that $f \in L^2(\Omega)$ in order to satisfy the third condition.
+For the second condition, we apply lifting to $u$, such that we can use Poincaré's inequality.
+We then have
 \begin{align*}
-    \int_{\partial\Omega} \left(\frac{\partial u}{\partial n} - p n\right) \cdot v \, \diff s
-    &= {
-        \int_{\partial\Omega_D} \left(\frac{\partial u}{\partial n} - p n\right) \cdot v \, \diff s
-        + \int_{\partial\Omega_N} \left(\frac{\partial u}{\partial n} - p n\right) \cdot v \, \diff s
-    } \\
-    &= {
-        \underbrace{
-            \int_{\partial\Omega_D} \left(\frac{\partial u}{\partial n} - p n\right) \cdot 0 \, \diff s
-        }_{\text{As we choose } v \in H^1_{0, D}}
-        + \int_{\partial\Omega_N} h \cdot v \, \diff s
-    } \\
-    &= \int_{\partial\Omega_N} h \cdot v \, \diff s.
+    a(u, v)
+    &= \int_{\Omega} \mu \nabla u \cdot \nabla v + w \cdot \nabla u \, v \, \diff x \\
+    &\leq \mu \abs{u}_1 \abs{v}_1 + \norm{w}_{L^\infty} \abs{u}_1 \norm{v}_{L^2} \\
+    &\leq \mu \abs{u}_1 \abs{v}_1 + C \norm{w}_{L^\infty} \abs{u}_1 \abs{v}_1 \\
+    &\leq \left( \mu + C \norm{w}_{L^\infty} \right) \abs{u}_1 \abs{v}_1.
 \end{align*}
-Defining
+As we've applied lifting to $u$, we can assume that $u \in H^1_0(\Omega)$, such that $\abs{u}_1$ is an equivalent norm to $\norm{u}_1$.
+
+Finally, for the first condition, we write
+\begin{equation}
+    a(u, v) = b(u, v) + c_w(u, v),
+\end{equation}
+where $b(u, v) = \int_{\Omega} \mu \nabla u \cdot \nabla v$ and $c_w(u, v) = \int_{\Omega} w \cdot \nabla u \, v$.
+For $b$, we already have
+\begin{equation}
+    b(u, u) = \int_{\Omega} \mu (\nabla u)^2 \, \diff x = \mu \abs{u}_1^2 \geq \frac{\mu}{1 + C} \norm{u}^2_2,
+\end{equation}
+as
+\begin{equation}
+    \norm{u}^2_2 = \abs{u}_1^2 + \norm{u}_{L^2}^2 \leq (1 + C) \abs{u}_1^2.
+\end{equation}
+$c_w$ is a bit more involved, however we start with integration by parts in order to get
+\begin{align*}
+    c_w(u, v)
+    &= \int_{\Omega} w \cdot \nabla u \, v \, \diff x \\
+    &= -\int_{\Omega} w \cdot \nabla v \, u \diff x - \int_\Omega \nabla \cdot w \, u \, v \, \diff x + \int_{\partial\Omega} w \cdot n \, u \, v \, \diff s.
+\end{align*}
+The boundary term vanishes as we've applied lifting, and if we assume that $\nabla \cdot w = 0$ such that we have incompressibility, we are left with
+\begin{equation}
+    c_w(u, v) = \int_{\Omega} w \cdot \nabla u \, v \, \diff x = -\int_{\Omega} w \cdot \nabla v \, u \diff x = -c_w(v, u).
+\end{equation}
+$c_w$ is then skew-symmetric, such that we have
+\begin{equation}
+    c_w(u, u) = -c_w(u, u) = 0.
+\end{equation}
+The convection-diffusion equation is then well-posed if we assume that $w$ is bounded and incompressible, such that $\nabla \cdot w = 0$.
+
+\subsection{Oscillations in Galerkin methods}
+In order to illustrate the oscillations, we consider a simplified scenario in one dimension, where we set $w = -1$.
+We then have the equation
 \begin{equation}
     \begin{split}
-        a(u, v) &= \int_{\Omega} \nabla u : \nabla v \, \diff x \\
-        b(v, p) &= \int_{\Omega} p (\nabla \cdot v) \, \diff x \\
-        L(v) &= \int_{\Omega} f \cdot v \, \diff x + \int_{\partial\Omega_N} h \cdot v \, \diff x
+        -\mu u_{xx} - u_x &= 0, \\
+        u(0) &= 0, \\
+        u(1) &= 1.
     \end{split}
 \end{equation}
-we can rewrite the weak form of Stokes problem succinctly as:
-Find $(u, p) \in V \times Q$ such that for all $(v, q) \in \hat{V} \times \hat{Q}$
+The variational problem is then, find $u \in H^1_0(0, 1)$ such that
+\begin{equation}
+    \int_{0}^{1} \mu u_x v_x - u_x v \, \diff x = 0, \quad \forall v \in H^1_0(0, 1).
+\end{equation}
+Using first order Lagrange elements, we have that the discretization is equivalent to the central finite difference scheme
+\begin{equation}
+    -\frac{\mu}{h^2} \left[
+        u_{i+1} - 2u_i + u_{i-1}
+    \right]
+    - \frac{w}{2h} \left[
+        u_{i+1} - u_{i-1}
+    \right] = 0, \quad i = 1, \ldots, N-1,
+\end{equation}
+which for $\mu = 0$ reduces to $u_{i + 1} = u_{i - 1} = \ldots$ and $u_{i + 2} = u_i = u_{i - 2} = \ldots$.
+This is the cause of the oscillations, as if $N$ is odd, then we'll have that all terms of the form $u_{2i} = 0$, while $u_{2i + 1} = 1$, determined by the boundary conditions.
+
+In order to get rid of these oscillations, we can apply upwinding, which amounts to using the approximations
 \begin{equation}
     \begin{split}
-        a(u, v) - b(v, p) &= L(v), \\
-        b(u, q) &= 0.
+        \frac{du}{dx}(x_i) &= \frac{1}{h} \left[
+            u_{i+1} - u_{i}
+        \right] \quad \text{if } w < 0, \\
+        \frac{du}{dx}(x_i) &= \frac{1}{h} \left[
+            u_{i} - u_{i-1}
+        \right] \quad \text{if } w > 0.
     \end{split}
 \end{equation}
-
-The finite element formulation follows directly from this:
-Find $u_h \in V_{g, h}$ and $p_h \in Q_h$ such that
-\begin{equation}\label{eq:stokes-fem}
-    \begin{split}
-        a(u_h, v_h) + b(p_h, v_h) &= L(v_h) \quad \forall v_h \in V_{0, h}, \\
-        b(q_h, u_h) &= 0 \quad\qquad \forall q_h \in Q_h.
-    \end{split}
-\end{equation}
-
-\subsection{Brezzi conditions}
-For a saddle point problem of the form \cref{eq:stokes-fem} to be well-posed, we require that four conditions are satisfied.
-\begin{enumerate}
-    \item Boundedness of $a$:
-        \begin{equation}
-            a(u_h, v_h) \leq C_1 \norm{u_h}_{V_h} \norm{v_{h}}_{V_h}
-            \quad
-            \forall u_h, v_h \in V_h.
-        \end{equation}
-
-    \item Boundedness of $b$:
-        \begin{equation}
-            b(u_h, q_h) \leq C_2 \norm{u_h}_{V_h} \norm{q_{h}}_{Q_h}
-            \quad
-            \forall {
-                u_h \in V_h,
-                q_h \in Q_h.
-            }
-        \end{equation}
-
-    \item Coersivity of $a$:
-        \begin{equation}
-            a(u_h, u_h) \geq C_3 \norm{u_h}_{V_h}^2
-            \quad
-            \forall u_h \in Z_h,
-        \end{equation}
-        where $Z_h = \{ u_h \in V_h | b(u_h, q_h) = 0 \, \forall q_h \in Q_h \}$.
-
-    \item ``Coercivity'' of $b$:
-        \begin{equation}
-            \sup_{u_h \in V_h} \frac{
-                b(u_h, q_h)
-            }{
-                \norm{u_h}_{V_h}
-            } \geq C_4 \norm{q_h}_{Q_h}
-            > 0
-            \quad
-            \forall q_h \in Q_h.
-        \end{equation}
-\end{enumerate}
-The first three conditions are easily verified for Stokes problem, while the last one is difficult unless the elements are designed specifically to meet this condition.
-As the first three a rather simple, they are included here for completeness.
-
-\subsubsection{Boundedness of \texorpdfstring{$a$}{a}}
-Let $u_h, v_h \in V_h$.
-Then we have by the Cauchy--Schwarz inequality % chktex 8
+The oscillations will then dissapear, however we are now using a first order scheme, rather than the second order scheme we had with the central finite difference scheme.
+One way to look at this is by noting that
 \begin{equation}
-    a(u_h, v_h)
-    = \int_{\Omega} \nabla u_h : \nabla v_h \, \diff x
-    \leq \norm{\nabla u_h}_{L^2} \norm{\nabla v_h}_{L^2}
-    \leq \norm{u_h}_1 \norm{v_h}_1.
+    \frac{u_i - u_{i-1}}{h} = \frac{u_{i + 1} - u_{i - 1}}{2h} + \frac{h}{2} \frac{-u_{i + 1} + 2u_i - u_{i - 1}}{h^2},
 \end{equation}
-This shows that $a$ is bounded, with $C_1 = 1$.
+as this shows that we are adding a diffusion term with coefficient $\varepsilon = \frac{h}{2}$ to the equation.
 
-\subsubsection{Boundedness of \texorpdfstring{$b$}{b}}
-Let $u_h \in V_h$ and $q_h \in Q_h$.
-We again utilize Cauchy--Schwarz inequality in order to show the bound, as % chktex 8
+This shows that we are then actually solving the problem
 \begin{equation}
-    b(u_h, q_h)
-    = \int_{\Omega} q_h (\nabla \cdot u_h) \, \diff x
-    \leq \norm{q_h}_{L^2} \norm{\nabla \cdot u_h}_{L^2}
-    \leq \norm{q_h}_{L^2} \norm{u_h}_{1}.
+    -(\mu + \varepsilon) u_{xx} - u_x = f,
 \end{equation}
-The tricky portion here is to bound $\norm{\nabla \cdot u_h}_{L^2} \leq \norm{u_h}_{1}$, however we can actually do it without a coefficient, according to Kent.
+as opposed to the original problem.
 
-\subsubsection{Coercivity of \texorpdfstring{$a$}{a}}
-Finally, let $u_h \in V_h$.
-Then, we simply have
-\begin{equation}
-    a(u_h, u_h)
-    = \int_{\Omega} \nabla u_h : \nabla u_h \diff x
-    = \norm{\nabla u_h}_{L^2}^2
-    \geq C_3 \norm{u_h}_1,
-\end{equation}
-where we can find $C_3$ as the norms are equivalent on $H^1_0$.
+\subsection{Streamline diffusion/Petrov--Galerkin} % chktex 8
+Streamline diffusion/Petrov--Galerkin (SUPG) methods are a more general and ordered way of dealing with the oscillations we saw in the previous section. % chktex 8
+We then add the diffusion in a consistent way, such that we aren't changing the solution as $h \to 0$.
 
-\subsection{Oscillations in the pressure}
-The simplest case where we discover oscillations in the pressure, is in Poiseuille flow.
-The analytical solution here is given by
+The Petrov--Galerkin method is maybe unsurprisingly very similar to the standard Galerkin method, given by: % chktex 8
+Find $u_h \in V_{h,g}$ such that
 \begin{equation}
-    u = (y(1 - y), 0)
-    \quad\text{and}\quad
-    p = 1 - x.
+    a(u_h, v_h) = L(v_h), \quad \forall v_h \in W_{h, 0},
 \end{equation}
-We choose this problem as the solution is known, which simplifies the analysis.
+where the difference is that the test space is now different from the trial space.
 
-We then discretize the problem in a similarly simple manor, with linear Lagrange elements for velocity and pressure.
-What we would see then when we solve the problem is that the velocity is well-represented, while there are wild oscillations present in the pressure.
-If we had chosen quadratic elements in the velocity however, both the velocity and the pressure would be captured accurately.
+In matrix form, the Galerkin formulation yields
+\begin{equation}
+    A_{ij} = a(N_i, N_j) = \int_{\Omega} \mu \nabla N_i \cdot \nabla N_j + w \cdot \nabla N_i \, N_j \, \diff x,
+\end{equation}
+while the Petrov--Galerkin formulation yields % chktex 8
+\begin{equation}
+    A_{ij} = a(N_i, L_j) = \int_{\Omega} \mu \nabla N_i \cdot \nabla L_j + w \cdot \nabla N_i \, L_j \, \diff x,
+\end{equation}
+where $L_j$ is the test function.
+Choosing the functions $L_j$ carefully is the key to adding diffusion in a consistent way.
 
-The reason for the appearance of the oscillations with the $P_1$--$P_1$ elements stems from the fact that they are not \textit{inf-sup} stable.
-That is, they do not fulfill the fourth Brezzi condition.
-The $P_{2}$--$P_{1}$ elements however fulfill this, resulting in a nice solution.
+We let $L_j = N_j + \beta h (w \cdot \nabla N_j)$.
+This gives us
+\begin{align*}
+    A_{ij} &= a(N_i, N_j + \beta h (w \cdot \nabla N_j)) \\
+    &= \int_{\Omega} \mu \nabla N_i \cdot (N_j + \beta h w \cdot \nabla N_j) \, \diff x + \int_{\Omega} w \cdot \nabla N_i (N_j + \beta h (w \cdot \nabla N_j)) \, \diff x \\
+    &= \underbrace{
+        \int_{\Omega} \mu \nabla N_i \cdot N_j \, \diff x
+        + \int_{\Omega} w \cdot \nabla N_i \, N_j \, \diff x
+    }_{\text{Standard Galerkin term}} \\
+    &\quad + \underbrace{
+        \beta h
+        \int_{\Omega} \mu \nabla N_i \cdot \nabla (w \cdot \nabla N_j) \, \diff x
+    }_{\text{Vanishes for linear elements}}
+    + \underbrace{
+        \beta h
+        \int_{\Omega} (w \cdot \nabla N_i) (w \cdot \nabla N_j) \, \diff x
+    }_{\text{Artificial diffusion in $w$ direction}}.
+\end{align*}
+The right hand side also changes, denoting the linear form now as $b(L_j)$, such that we have
+\begin{equation}
+    b(L_j)
+    = \int_{\Omega} f L_j \, \diff x
+    = \int_{\Omega} f (N_j + \beta h (w \cdot \nabla N_j)) \, \diff x.
+\end{equation}
+We are in other words changing both sides of the equation, such that the artifical diffusion is consistent.
 
-\subsection{inf-sup and approximation}
-In order to obtain order optimal convergence rates, we require that the $\inf$-$\sup$ condition,
+\subsection{Cea's lemma}
+Cea's lemma states that, given the conditions for Lax--Milgram are satisfied, we have % chktex 8
 \begin{equation}
-    \inf_{p \in Q_h} \sup_{v \in V_{h, g}} \frac{(p, \nabla \cdot v)}{\norm{v}_1 \norm{p}_0}
-    \geq \beta
-    > 0,
+    \norm{u - u_h}_{V} \leq \frac{C B}{\alpha} h^t \norm{u}_{t + 1}.
 \end{equation}
-is satisfied.
-When this is satisfied, we get convergence
-\begin{equation}
-    \norm{u - u_h}_1 + \norm{p - p_h}_0
-    \leq C h^k \norm{u}_{k+1} + D h^{\ell + 1} \norm{p}_{\ell + 1},
-\end{equation}
-where $k$ and $\ell$ are the polynomial degree of the velocity and pressure respectively.
-Let's see how this is reflected in the approximations of a couple elements.
+where $B$ comes the polynomial approximation properties, and $\alpha$ and $C$ are the constants from the Lax--Milgram theorem. % chktex 8
+For convection-dominated problems, $\frac{C}{\alpha}$ is large, which causes poor approximation on coarse grids.
 
-\subsubsection{The Taylor--Hood element} % chktex 8
-For the Taylor--Hood element, we have $u \in P_2$ and $p \in P_1$, subject to the restriction that they are continuous across elements. % chktex 8
-This element satisfies the $\inf$-$\sup$ condition, and we can therefore directly get the approximation property
+In order to get improved error estimates for the SUPG method, we utilize an alternative norm, given by
 \begin{equation}
-    \norm{u - u_h}_1 + \norm{p - p_h}_0
-    \leq C h^2 (\norm{u}_3 + \norm{p}_2).
+    \norm{u}_{sd} = (h \norm{w \cdot \nabla u}^2 + \mu \abs{\nabla u}^2)^{1/2}.
 \end{equation}
-For the generalized $P_{k}$--$P_{k-1}$ Taylor--Hood element, we similarly get % chktex 8
+Given that the conditions for Lax--Milgram still hold, solving the SUPG problem on a finite element space of order 1 gives us % chktex 8
 \begin{equation}
-    \norm{u - u_h}_1 + \norm{p - p_h}_0
-    \leq C h^k (\norm{u}_{k+1} + \norm{p}_k).
+    \norm{u - u_h}_{sd} \leq C h^{3/2} \norm{u}_2.
 \end{equation}
+The norm $\norm{u}_{sd}$ is called the \textit{streamline diffusion} norm.
 
-\subsubsection{The Crouzeix--Raviart element} % chktex 8
-The Crouzeix--Raviart element also satisfies the $\inf$-$\sup$ condition, and are given by $u \in P_1$ and $p \in P_0$. % chktex 8
-Here, $u$ is \emph{only} continuous in the mid-point of each side, and $p$ is discontinuous.
-We then get the error estimate
-\begin{equation}
-    \norm{u - u_h}_1 + \norm{p - p_h}_0
-    \leq C h (\norm{u}_2 + \norm{p}).
-\end{equation}
-It is $\inf$-$\sup$ stable with our formulation of Stokes problem, however if we replace it with the more physically correct formulation
-\begin{equation}
-    -\nabla \cdot \epsilon(u) - \nabla p = f,
-\end{equation}
-where $\epsilon(u) = \frac{1}{2} (\nabla + \nabla^T)$ is the symmetric gradient, it cannot be used.
-We can generalize the element to odd degrees, but not even.
-
-\subsubsection{The Mini element}
-The Mini element is linear in velocity and pressure, however it contains an extra degree of freedom in the velocity which is zero on all edges, dubbed a bubble function.
-For instance in the 2D case, the bubble function, on the reference triangle, is given by
-\begin{equation}
-    b(x, y) = xy(1 - x - y).
-\end{equation}
-This yields the error estimate
-\begin{equation}
-    \norm{u - u_h}_1 + \norm{p - p_h}_0
-    \leq
-    C_0 h \norm{u}_2 + C_1 h^2 \norm{p}_2.
-\end{equation}
-Note that the convergence in the velocity is linear, meaning that adding the bubble function brought stability, but not an increase in approximation order.
-
-\subsection{Stability without inf-sup}
-When stabilizing, we typically replace a system of the form
-\begin{equation}
-    \begin{split}
-        Au + B^T p &= f \\
-        B u &= 0,
-    \end{split}
-\end{equation}
-with a system
-\begin{equation}
-    \begin{split}
-        Au + B^T p &= f \\
-        B u - \epsilon Dp &= \epsilon d,
-    \end{split}
-\end{equation}
-where $D$ is a positive, but not necessarily positive definite, matrix.
-We obtain a nonsingular system, as multiplying the first equation by $A^{-1}$ and factoring yields
-\begin{equation}
-    \begin{split}
-        u + A^{-1} B^T p &= A^{-1} f \\
-        \underbrace{B u}_{\text{Insert second equation}} &= B A^{-1} f - B A^{-1} B^T p \\
-        \epsilon d + \epsilon D p &= B A^{-1} f - B A^{-1} B^T p \\
-        (B A^{-1} B^T + \epsilon D)p &= BA^{-1} f - \epsilon d,
-    \end{split}
-\end{equation}
-and $(B A^{-1} B^T + \epsilon D)$ is nonsingular if $D$ is nonsingular, as both components are positive.
-
-Solving for $p$ in the second equation we get
-\begin{equation}
-    \begin{split}
-        \epsilon D p &= Bu - \epsilon d \\
-        p &= (\epsilon D)^{-1} (Bu - \epsilon d),
-    \end{split}
-\end{equation}
-and inserting this into the second equation yields
-\begin{equation}
-    \begin{split}
-        Au + B^T (\epsilon D)^{-1} (Bu - \epsilon d) &= f \\
-        \left( A + \frac{1}{\epsilon} B^T D^{-1} B \right) u &= f + D^{-1} d.
-    \end{split}
-\end{equation}
-Then, $\left( A + \frac{1}{\epsilon} B^T D^{-1} B \right)$ is nonsingular as $A$ is invertible, and $B^T D^{-1} B$ is positive.
-
-The question is then how to choose $D$, and we have a couple of options.
-The three main techiques are:
-\begin{enumerate}
-    \item
-        Pressure stabilization, by choosing $\nabla \cdot v + \epsilon \Delta p = 0$.
-        This is motivated through the convection-diffusion equation.
-        This sets $D = A$.
-
-    \item
-        Penalty method, by choosing $\nabla \cdot v + \epsilon p = 0$.
-        Typically one then chooses the Velocity-Schur complement.
-        This sets $D = M$.
-
-    \item
-        Artificial compressibility, by choosing $\nabla \cdot -\epsilon \frac{\partial p}{\partial t}$.
-        This is practical as it allows for time stepping.
-        This sets $D = \frac{1}{\Delta t} M$.
-\end{enumerate}
+The proof for this is very involved, and I'd rather not to too much into detail about it.
+One thing to note however is that this error bound is independent of the convection velocity, which is a big improvement over the standard Galerkin method.

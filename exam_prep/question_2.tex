@@ -1,231 +1,226 @@
-\section{Discretization of Convection-Diffusion}
-Derive a proper variational formulation of the convection-diffusion problem.
-Derive sufficient conditions that make the problem well-posed.
-Discuss why oscillations appear for standard Galerkin methods and show how SUPG methods resolve these problems.
-Discuss also approximation properties in light of Cea's lemma.
+\section{Weak formulation and finite element error estimation}
+\subsection*{Problem description}
+Formulate a finite element method for the Poisson problem with a variable coefficient $\kappa : \Omega \to \mathbb{R}^{d \times d}$.
+Assume that $\kappa$ is positive and symmetric.
+Show that Lax--Milgram's theorem is satisfied. % chktex 8
+Consider extensions to e.g.\ convection-diffusion equation and the elasticity equation.
+Derive \textit{a priori} error estimates in terms of Cea's lemma for the finite element method in the energy norm.
+Describe how to perform an estimation of convergence rates.
 
-\subsection{Weak form of the Convection-Diffusion equation}
-Here, we consider the convection-diffusion equation given by
+\subsection{Weak form of the Poisson equation}
+The Poisson problem with a variable coefficient $\kappa$ is given by
 \begin{equation}
     \begin{split}
-        -\mu \Delta u + w \cdot \nabla u &= f, \quad \text{in } \Omega,\\
-        u &= g, \quad \text{on } \partial\Omega,
+        -\nabla \cdot (\kappa \nabla u) &= f \quad \text{in } \Omega, \\
+        u &= g \quad \text{on } \partial\Omega_D, \\
+        \kappa \frac{\partial u}{\partial n} &= h \quad \text{on } \partial\Omega_N,
     \end{split}
 \end{equation}
-assuming Dirichlet conditions on the whole boundary.
+with $\partial\Omega_D$ and $\partial\Omega_N$ disjoint parts of the boundary $\partial\Omega$.
+Here, $\partial\Omega_D$ denotes the Dirichlet boundary, while $\partial\Omega_N$ denotes the Neumann boundary.
 
-In order to derive the weak form, we follow the steps:
+Setting up the weak formulation roughly follows the following steps:
 \begin{enumerate}
-    \item Multiply the equation with a test function $v$ and integrate.
+    \item Multiply with a test function $v$ and integrate over the domain $\Omega$
 
-    \item Integrate by parts, and apply Gauss--Green's lemma. % chktex 8
+    \item Integrate by parts, and apply Green's lemma.
 
     \item Apply the boundary conditions.
 \end{enumerate}
-The first step gives us
+Multiplying with a test function $v$ and integrating over the domain $\Omega$ gives us
 \begin{equation}
-    \int_\Omega -\mu \Delta u \, v + w \cdot \nabla u \, v \, \diff x = \int_\Omega f \, v \, \diff x.
+    \int_\Omega -\nabla \cdot (\kappa \nabla u) \, v \, \diff x = \int_\Omega f \, v \, \diff x.
 \end{equation}
-Then, we use integration by parts on the first term in order to ease the requirement of $u \in H^2(\Omega)$ to $u \in H^1(\Omega)$, while strengthening the requirement on $v$ from $v \in L_2(\Omega)$ to $v \in H^1(\Omega)$.
-This gives us
+This is however not ideal, as we are now required to have $u \in H^2(\Omega)$, which is not ideal.
+We therefore apply Green's lemma to the left-hand side, which gives us
 \begin{equation}
-    \int_{\Omega} \mu \nabla u \cdot \nabla v  + w \cdot \nabla u \, v \, \diff x = \int_{\Omega} f \, v \, \diff x + \int_{\partial\Omega} \mu \frac{\partial u}{\partial n} v \, \diff s.
+    \int_\Omega -\nabla \cdot (\kappa \nabla u) \, v \, \diff x
+    = \int_\Omega \kappa \nabla u \cdot \nabla v \, \diff x - \int_{\partial\Omega} \kappa \frac{\partial u}{\partial n} \, v \, \diff s.
 \end{equation}
-Next, we consider the boundary term.
-As the solution is known on the boundary, we need to solve for $u$ on the boundary, and can therefore choose $v \in H_0^1(\Omega)$, such that
-\begin{equation}
-    \int_{\partial\Omega} \mu \frac{\partial u}{\partial n} v \, \diff s
-    = \int_{\partial\Omega} \mu \frac{\partial u}{\partial n} 0 \, \diff s = 0,
-\end{equation}
-effectively removing the boundary term from our formulation.
+This eases the requirements on $u$, as we now only require $u \in H^1(\Omega)$, while strengthening the requirements on $v$ to $v \in H^1(\Omega)$.
 
-We can now write the weak form of the convection-diffusion equation as
+We can now apply the boundary conditions.
+Splitting the boundary integral into two parts, we have
 \begin{equation}
-    \int_{\Omega} \mu \nabla u \cdot \nabla v + w \cdot \nabla u \, v \, \diff x = \int_{\Omega} f \, v \, \diff x.
+    \int_{\partial\Omega} \kappa \frac{\partial u}{\partial n} \, v \, \diff s = \int_{\partial\Omega_D} \kappa \frac{\partial u}{\partial n} \, v \, \diff s + \int_{\partial\Omega_N} \kappa \frac{\partial u}{\partial n} \, v \, \diff s.
 \end{equation}
-The bilinear form is then given by
+As we have a section of Dirichlet boundary, we need not solve for $u$ here, as we know the value of $u$ on this section.
+We may therefore set $v = 0$ on $\partial\Omega_D$ by having $v \in H_0^1(\Omega)$, which gives us
 \begin{equation}
-    a(u,v) = \int_{\Omega} \mu \nabla u \cdot \nabla v + w \cdot \nabla u \, v \, \diff x,
+    \int_{\partial\Omega_D} \kappa \frac{\partial u}{\partial n} \, v \, \diff s + \int_{\partial\Omega_N} \kappa \frac{\partial u}{\partial n} \, v \, \diff s
+    = \int_{\partial\Omega_N} h \, v \, \diff s.
 \end{equation}
-and the linear form is given by
-\begin{equation}
-    L(v) = \int_{\Omega} f \, v \, \diff x.
-\end{equation}
-The weak form of the problem is then, find $u \in V$ such that
-\begin{equation}
-    a(u,v) = L(v), \quad \forall v \in V.
-\end{equation}
-% Here, we assume that $\kappa$ is symmetric, positive and bounded, and that $w$ is bounded.
 
-\subsection{Well-posedness}
-For well-posedness, we rely on the Lax--Milgram theorem, meaning we have to find sufficient conditions such that: % chktex 8
-\begin{enumerate}
-    \item $a(u, u) \geq \alpha \norm{u}^2_V$ for some $\alpha > 0$ and all $u \in V$.
-    \item $a(u, v) \leq \beta \norm{u}_V \norm{v}_V$ for some $\beta > 0$ and all $u, v \in V$.
-    \item $L(v) \leq D \norm{v}_V$ for some $D > 0$ and all $v \in V$.
-\end{enumerate}
-
-Here, we'll work through the conditions in reverse order, adding conditions as we go.
-For the third condition, we simply have by Cauchy--Schwarz % chktex 8
+This gives us the weak formulation for the Poisson problem
 \begin{equation}
-    L(v) = \int_\Omega f \, v \, \diff x \leq \norm{f}_{L^2} \norm{v}_{L^2} \leq \norm{f}_{L^2} \norm{v}_1,
+    \int_\Omega \kappa \nabla u \cdot \nabla v \, \diff x = \int_\Omega f \, v \, \diff x + \int_{\partial\Omega_N} h \, v \, \diff s.
 \end{equation}
-showing that we require that $f \in L^2(\Omega)$ in order to satisfy the third condition.
-For the second condition, we apply lifting to $u$, such that we can use Poincaré's inequality.
-We then have
+
+\subsection{Lax--Milgram's theorem} % chktex 8
+Lax--Milgram's theorem states: % chktex 8
+\begin{theorem}
+    Let $V$ be a Hilbert space, $a(\cdot, \cdot)$ be a bilinear form, $L(\cdot)$ be a linear form, and let the following three conditions be satisfied:
+    \begin{enumerate}
+        \item $a(u, u) \geq \alpha \norm{u}_V^2$ for all $u \in V$, where $\alpha > 0$ is a constant.
+
+        \item $a(u, v) \leq C \norm{u}_V \norm{v}_V$ for all $u, v \in V$, where $C > 0$ is a constant.
+
+        \item $L(v) \leq D \norm{v}_V$ for all $v \in V$, where $D > 0$ is a constant.
+    \end{enumerate}
+    Then, the problem of finding $u \in V$ such that
+    \begin{equation}
+        a(u, v) = L(v) \quad \forall v \in V
+    \end{equation}
+    is well-posed in the sense that there exists a unique solution with the stability condition
+    \begin{equation}
+        \norm{u}_V \leq \frac{C}{\alpha} \norm{L}_{V^*}.
+    \end{equation}
+\end{theorem}
+
+We can now show that Lax--Milgram's theorem is satisfied for the weak formulation of the Poisson problem. % chktex 8
+We have the bilinear form
+\begin{equation}
+    a(u, v) = \int_\Omega \kappa \nabla u \cdot \nabla v \, \diff x,
+\end{equation}
+and the linear form
+\begin{equation}
+    L(v) = \int_\Omega f \, v \, \diff x + \int_{\partial\Omega_N} h \, v \, \diff s.
+\end{equation}
+We can now show that the three conditions of Lax--Milgram's theorem are satisfied. % chktex 8
+
+Firstly we have that
 \begin{align*}
-    a(u, v)
-    &= \int_{\Omega} \mu \nabla u \cdot \nabla v + w \cdot \nabla u \, v \, \diff x \\
-    &\leq \mu \abs{u}_1 \abs{v}_1 + \norm{w}_{L^\infty} \abs{u}_1 \norm{v}_{L^2} \\
-    &\leq \mu \abs{u}_1 \abs{v}_1 + C \norm{w}_{L^\infty} \abs{u}_1 \abs{v}_1 \\
-    &\leq \left( \mu + C \norm{w}_{L^\infty} \right) \abs{u}_1 \abs{v}_1.
+    a(u, u)
+    &= \int_\Omega \kappa \nabla u \cdot \nabla u \, \diff x
+    = \int_\Omega (\nabla u)^T \kappa^T \nabla u \, \diff x \\
+    &= \int_\Omega (\nabla u)^T \kappa \nabla u \, \diff x
+    \geq \int_\Omega k_0 \abs{\nabla u}^2 \, \diff x \\
+    &= k_0 \abs{u}^2_1
+    \geq \alpha \norm{u}_1^2
 \end{align*}
-As we've applied lifting to $u$, we can assume that $u \in H^1_0(\Omega)$, such that $\abs{u}_1$ is an equivalent norm to $\norm{u}_1$.
+where we've first used the fact that $\kappa$ is symmetric, and then that $\kappa$ is positive, and finally that the $H^1_0$ semi-norm is equivalent to the $H^1_0$ norm.
 
-Finally, for the first condition, we write
+For the second point, we firstly show that $a(\cdot, \cdot)$ defines an inner product, assuming that $\kappa$ is bounded.
+The inequality then follows simply from the Cauchy--Schwarz inequality. % chktex 8
+In order to show that $a(\cdot, \cdot)$ is symmetric, we simply have
 \begin{equation}
-    a(u, v) = b(u, v) + c_w(u, v),
+    a(u, v) = \int_\Omega \kappa \nabla u \cdot \nabla v \, \diff x
+    = \int_\Omega (\nabla v)^T \kappa \nabla u \, \diff x
+    = a(v, u).
 \end{equation}
-where $b(u, v) = \int_{\Omega} \mu \nabla u \cdot \nabla v$ and $c_w(u, v) = \int_{\Omega} w \cdot \nabla u \, v$.
-For $b$, we already have
+We can now show that $a(u, v) \leq C \norm{u}_V \norm{v}_V$.
+As $\kappa$ is bounded, we have
 \begin{equation}
-    b(u, u) = \int_{\Omega} \mu (\nabla u)^2 \, \diff x = \mu \abs{u}_1^2 \geq \frac{\mu}{1 + C} \norm{u}^2_2,
+    \kappa \xi \cdot \xi \leq k_1 \abs{\xi}^2
 \end{equation}
-as
+for all $\xi \in \mathbb{R}^d$.
+This gives us that
 \begin{equation}
-    \norm{u}^2_2 = \abs{u}_1^2 + \norm{u}_{L^2}^2 \leq (1 + C) \abs{u}_1^2.
+    a(u, u) = \int_\Omega \kappa \nabla u \cdot \nabla u \, \diff x
+    \leq k_1 \int_\Omega \abs{\nabla u}^2 \, \diff x
+    \leq k_1 \abs{u}_1^2.
 \end{equation}
-$c_w$ is a bit more involved, however we start with integration by parts in order to get
+We then have that
+\begin{gather*}
+    a(u, v)^2 \leq a(u, u) a(v, v) = k_1^2 \abs{u}_1^2 \abs{v}_1^2 \\
+    a(u, v) \leq k_1 \abs{u}_1 \abs{v}_1
+\end{gather*}
+Additionally, for $H^1_0$ we have
 \begin{align*}
-    c_w(u, v)
-    &= \int_{\Omega} w \cdot \nabla u \, v \, \diff x \\
-    &= -\int_{\Omega} w \cdot \nabla v \, u \diff x - \int_\Omega \nabla \cdot w \, u \, v \, \diff x + \int_{\partial\Omega} w \cdot n \, u \, v \, \diff s.
+    \norm{u}_1^2 = \norm{u}_{L^2}^2 + \abs{u}_1^2
+    \leq C \abs{u}_1^2 + \abs{u}_1^2
+    = (1 + C) \abs{u}_1^2
 \end{align*}
-The boundary term vanishes as we've applied lifting, and if we assume that $\nabla \cdot w = 0$ such that we have incompressibility, we are left with
+by Poincaré's lemma, which gives us
 \begin{equation}
-    c_w(u, v) = \int_{\Omega} w \cdot \nabla u \, v \, \diff x = -\int_{\Omega} w \cdot \nabla v \, u \diff x = -c_w(v, u).
+    a(u, v) \leq k_1 \abs{u}_1 \abs{v}_1
+    \leq \frac{k_1}{1 + C} \norm{u}_1 \norm{v}_1.
 \end{equation}
-$c_w$ is then skew-symmetric, such that we have
-\begin{equation}
-    c_w(u, u) = -c_w(u, u) = 0.
-\end{equation}
-The convection-diffusion equation is then well-posed if we assume that $w$ is bounded and incompressible, such that $\nabla \cdot w = 0$.
 
-\subsection{Oscillations in Galerkin methods}
-In order to illustrate the oscillations, we consider a simplified scenario in one dimension, where we set $w = -1$.
-We then have the equation
+Lastly, we have
+\begin{align*}
+    L(v)
+    &= \int_\Omega f \, v \, \diff x + \int_{\partial\Omega_N} h \, v \, \diff s
+    \leq \norm{f}_{L^2(\Omega)} \norm{v}_{L^2(\Omega)} + \norm{h}_{L^2(\partial\Omega_N)} \norm{v}_{L^2(\partial\Omega_N)} \\
+    &\leq (\norm{f}_{L^2}(\Omega) + \norm{h}_{L^2(\partial\Omega_N)}) \norm{v}_{L^2(\Omega)}
+    \leq D \norm{v}_{L^2(\Omega)}
+    \leq D \norm{v}_1,
+\end{align*}
+showing that the third condition is satisfied as well.
+Here, we assume that $f \in L^2(\Omega)$ and $h \in L^2(\partial\Omega_N)$, which is a reasonable assumption.
+
+\subsection{Extension to convection-diffusion equation}
+The convection-diffusion equation is given by
 \begin{equation}
     \begin{split}
-        -\mu u_{xx} - u_x &= 0, \\
-        u(0) &= 0, \\
-        u(1) &= 1.
+        -\nabla \cdot (\kappa \nabla u) + w \cdot \nabla u &= f \quad \text{in } \Omega, \\
+        u &= g \quad \text{on } \partial\Omega_D, \\
+        \kappa \frac{\partial u}{\partial n} &= h \quad \text{on } \partial\Omega_N,
     \end{split}
 \end{equation}
-The variational problem is then, find $u \in H^1_0(0, 1)$ such that
-\begin{equation}
-    \int_{0}^{1} \mu u_x v_x - u_x v \, \diff x = 0, \quad \forall v \in H^1_0(0, 1).
-\end{equation}
-Using first order Lagrange elements, we have that the discretization is equivalent to the central finite difference scheme
-\begin{equation}
-    -\frac{\mu}{h^2} \left[
-        u_{i+1} - 2u_i + u_{i-1}
-    \right]
-    - \frac{w}{2h} \left[
-        u_{i+1} - u_{i-1}
-    \right] = 0, \quad i = 1, \ldots, N-1,
-\end{equation}
-which for $\mu = 0$ reduces to $u_{i + 1} = u_{i - 1} = \ldots$ and $u_{i + 2} = u_i = u_{i - 2} = \ldots$.
-This is the cause of the oscillations, as if $N$ is odd, then we'll have that all terms of the form $u_{2i} = 0$, while $u_{2i + 1} = 1$, determined by the boundary conditions.
+where $w$ is the convection term.
 
-In order to get rid of these oscillations, we can apply upwinding, which amounts to using the approximations
-\begin{equation}
-    \begin{split}
-        \frac{du}{dx}(x_i) &= \frac{1}{h} \left[
-            u_{i+1} - u_{i}
-        \right] \quad \text{if } w < 0, \\
-        \frac{du}{dx}(x_i) &= \frac{1}{h} \left[
-            u_{i} - u_{i-1}
-        \right] \quad \text{if } w > 0.
-    \end{split}
-\end{equation}
-The oscillations will then dissapear, however we are now using a first order scheme, rather than the second order scheme we had with the central finite difference scheme.
-One way to look at this is by noting that
-\begin{equation}
-    \frac{u_i - u_{i-1}}{h} = \frac{u_{i + 1} - u_{i - 1}}{2h} + \frac{h}{2} \frac{-u_{i + 1} + 2u_i - u_{i - 1}}{h^2},
-\end{equation}
-as this shows that we are adding a diffusion term with coefficient $\varepsilon = \frac{h}{2}$ to the equation.
-
-This shows that we are then actually solving the problem
-\begin{equation}
-    -(\mu + \varepsilon) u_{xx} - u_x = f,
-\end{equation}
-as opposed to the original problem.
-
-\subsection{Streamline diffusion/Petrov--Galerkin} % chktex 8
-Streamline diffusion/Petrov--Galerkin (SUPG) methods are a more general and ordered way of dealing with the oscillations we saw in the previous section. % chktex 8
-We then add the diffusion in a consistent way, such that we aren't changing the solution as $h \to 0$.
-
-The Petrov--Galerkin method is maybe unsurprisingly very similar to the standard Galerkin method, given by: % chktex 8
-Find $u_h \in V_{h,g}$ such that
-\begin{equation}
-    a(u_h, v_h) = L(v_h), \quad \forall v_h \in W_{h, 0},
-\end{equation}
-where the difference is that the test space is now different from the trial space.
-
-In matrix form, the Galerkin formulation yields
-\begin{equation}
-    A_{ij} = a(N_i, N_j) = \int_{\Omega} \mu \nabla N_i \cdot \nabla N_j + w \cdot \nabla N_i \, N_j \, \diff x,
-\end{equation}
-while the Petrov--Galerkin formulation yields % chktex 8
-\begin{equation}
-    A_{ij} = a(N_i, L_j) = \int_{\Omega} \mu \nabla N_i \cdot \nabla L_j + w \cdot \nabla N_i \, L_j \, \diff x,
-\end{equation}
-where $L_j$ is the test function.
-Choosing the functions $L_j$ carefully is the key to adding diffusion in a consistent way.
-
-We let $L_j = N_j + \beta h (w \cdot \nabla N_j)$.
-This gives us
-\begin{align*}
-    A_{ij} &= a(N_i, N_j + \beta h (w \cdot \nabla N_j)) \\
-    &= \int_{\Omega} \mu \nabla N_i \cdot (N_j + \beta h w \cdot \nabla N_j) \, \diff x + \int_{\Omega} w \cdot \nabla N_i (N_j + \beta h (w \cdot \nabla N_j)) \, \diff x \\
-    &= \underbrace{
-        \int_{\Omega} \mu \nabla N_i \cdot N_j \, \diff x
-        + \int_{\Omega} w \cdot \nabla N_i \, N_j \, \diff x
-    }_{\text{Standard Galerkin term}} \\
-    &\quad + \underbrace{
-        \beta h
-        \int_{\Omega} \mu \nabla N_i \cdot \nabla (w \cdot \nabla N_j) \, \diff x
-    }_{\text{Vanishes for linear elements}}
-    + \underbrace{
-        \beta h
-        \int_{\Omega} (w \cdot \nabla N_i) (w \cdot \nabla N_j) \, \diff x
-    }_{\text{Artificial diffusion in $w$ direction}}.
-\end{align*}
-The right hand side also changes, denoting the linear form now as $b(L_j)$, such that we have
-\begin{equation}
-    b(L_j)
-    = \int_{\Omega} f L_j \, \diff x
-    = \int_{\Omega} f (N_j + \beta h (w \cdot \nabla N_j)) \, \diff x.
-\end{equation}
-We are in other words changing both sides of the equation, such that the artifical diffusion is consistent.
+{\Large To be continued}
 
 \subsection{Cea's lemma}
-Cea's lemma states that, given the conditions for Lax--Milgram are satisfied, we have % chktex 8
+Cea's lemma states that if $u_h$ is the finite element solution, and $u$ is the exact solution, then
 \begin{equation}
-    \norm{u - u_h}_{V} \leq \frac{C B}{\alpha} h^t \norm{u}_{t + 1}.
+    \norm{u - u_h}_V \leq \frac{C B}{\alpha} h^t \norm{u}_{t + 1},
 \end{equation}
-where $B$ comes the polynomial approximation properties, and $\alpha$ and $C$ are the constants from the Lax--Milgram theorem. % chktex 8
-For convection-dominated problems, $\frac{C}{\alpha}$ is large, which causes poor approximation on coarse grids.
+where $B$ is the constant derived from the polynomial approximation, $h$ is a measure of the mesh size, and $C$ and $\alpha$ are constants from Lax--Milgram's theorem. % chktex 8
 
-In order to get improved error estimates for the SUPG method, we utilize an alternative norm, given by
+Here, we assume that the energy norm is given by
 \begin{equation}
-    \norm{u}_{sd} = (h \norm{w \cdot \nabla u}^2 + \mu \abs{\nabla u}^2)^{1/2}.
+    \norm{w}_E = a(w, w)^{1/2},
 \end{equation}
-Given that the conditions for Lax--Milgram still hold, solving the SUPG problem on a finite element space of order 1 gives us % chktex 8
+and that we should find an error estimate in this norm.
+We then have
+\begin{align*}
+    \norm{u - u_h}_E^2 &= a(u - u_h, u - u_h) \\
+    &= a(u - u_h, u - v + v - u_h) \qquad v \in V \\
+    &= a(u - u_h, u - v) + \underbrace{a(u - u_h, v - u_h)}_{0 \text{ as } v - u_h \in V} \\
+    &= a(u - u_h, u - v) \\
+    &\leq \norm{u - u_h}_E \norm{u - v}_E.
+\end{align*}
+Dividing by $\norm{u - u_h}_E$ gives us
 \begin{equation}
-    \norm{u - u_h}_{sd} \leq C h^{3/2} \norm{u}_2.
+    \norm{u - u_h}_E \leq \norm{u - v}_E.
 \end{equation}
-The norm $\norm{u}_{sd}$ is called the \textit{streamline diffusion} norm.
+We then further have, choosing $v = I_h u$ as the polynomial approximation of order $t$,
+\begin{align*}
+    \norm{u - I_h u}_E^2 &= a(u - I_h u, u - I_h u) \\
+    &\leq \frac{k_1}{1 + C} \norm{u - I_h u}_1^2 \\
+    &\leq \frac{k_1}{1 + C} (B h^t)^2 \norm{u}_{t + 1}^2.
+\end{align*}
+This finally gives us that
+\begin{equation}
+    \norm{u - u_h}_E \leq \sqrt{\frac{k_1}{1 + C}} B h^t \norm{u}_{t + 1}.
+\end{equation}
+I believe this is what the question is asking for, but I am not sure.
 
-The proof for this is very involved, and I'd rather not to too much into detail about it.
-One thing to note however is that this error bound is independent of the convection velocity, which is a big improvement over the standard Galerkin method.
+\subsection{Convergence rates}
+We can estimate the convergence rates by looking at the error estimates for varying mesh sizes $h$.
+Considering the error estimates for $h = h_1$ and $h = h_2$, we have
+\begin{equation*}
+    \norm{u - u_{h_1}}_E \leq C h_1^t \norm{u}_{t + 1}
+    \quad\text{and}\quad
+    \norm{u - u_{h_2}}_E \leq C h_2^t \norm{u}_{t + 1}.
+\end{equation*}
+This gives
+\begin{align*}
+    \frac{\norm{u - u_{h_2}}_E}{\norm{u - u_{h_1}}_E}
+    &\leq \frac{C h_2^t \norm{u}_{t + 1}}{C h_1^t \norm{u}_{t + 1}} \\
+    &= \left(\frac{h_2}{h_1}\right)^t.
+\end{align*}
+Taking the logarithm of both sides gives us
+\begin{align*}
+    \log \left(\frac{\norm{u - u_{h_2}}_E}{\norm{u - u_{h_1}}_E}\right)
+    &\leq t \log \left(\frac{h_2}{h_1}\right) \\
+    \frac{
+        \log \left(\frac{\norm{u - u_{h_2}}_E}{\norm{u - u_{h_1}}_E}\right)
+    }{
+        \log \left(\frac{h_2}{h_1}\right)
+    }
+    &\leq t.
+\end{align*}
+If we solve for varying mesh sizes $\{h_i\}_{i=1}^n$, keeping $h_{i+1} / h_i$ constant, we get a series of lower bounds for the convergence rate $t$.
