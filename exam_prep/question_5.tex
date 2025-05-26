@@ -1,0 +1,232 @@
+\section{Discretization of Navier--Stokes} % chktex 8
+Explain the difference between operator splitting and algebraic splitting in the context of the incompressible Navier--Stokes equations. % chktex 8
+We remark that algebraic splitting is a term usually used for discretizations where the PDEs are discretized in space prior to time.
+Show disadvantages for operator splitting schemes associated with boundary conditions.
+Explain the advantage with operator splitting schemes.
+
+\subsection{Operator splitting} % chktex 8
+The incompressible Navier--Stokes equation is given by % chktex 8
+\begin{equation}
+    \begin{split}
+        \frac{\partial u}{\partial t} + u \cdot \nabla u
+        &= -\frac{\nabla p}{\rho} + \nu \nabla^2 u + f, \\
+        \nabla \cdot u &= 0.
+    \end{split}
+\end{equation}
+
+Operator splitting refers in this case to discretizing in time prior to space.
+If we discretize simply with a forward Euler scheme, we end up with
+\begin{equation}
+    \frac{u^{n+1} - u^n}{\Delta t} + u^n \cdot \nabla u^n
+    = -\frac{\nabla p^n}{\rho} + \nu \nabla^2 u^n + f^n,
+\end{equation}
+which rearranged gives us
+\begin{equation}
+    u^{n+1} = u^n + \Delta t \left(
+        - u^n \cdot \nabla u^n
+        -\frac{\nabla p^n}{\rho}
+        + \nu \nabla^2 u^n
+        + f^n
+    \right).
+\end{equation}
+This is relatively simple, however it immediately raises a few issues.
+For one, we get no expression for how we should update the pressure, i.e.\ what should $p^{n+1}$ be?
+Secondly, we have no reason to assume that $\nabla \cdot u^{n+1} = 0$.
+
+One way to overcome this is to introduce a tentative solution
+\begin{equation}\label{eq:tent}
+    u^* = u^n + \Delta t \left(
+        - u^n \cdot \nabla u^n
+        -\frac{\nabla p^n}{\rho}
+        + \nu \nabla^2 u^n
+        + f^n
+    \right),
+\end{equation}
+then saying that the real solution $u^{n+1}$ should satisfy
+\begin{equation}\label{eq:real}
+    u^{n + 1} = u^n + \Delta t \left(
+        - u^n \cdot \nabla u^n
+        -\frac{\nabla p^{n+1}}{\rho}
+        + \nu \nabla^2 u^n
+        + f^n
+    \right).
+\end{equation}
+Subtracting \cref{eq:tent} from \cref{eq:real}, we get
+\begin{equation}\label{eq:correction}
+    u^{n + 1} - u^* = -\frac{\Delta t}{\rho} \nabla \left( p^{n+1} - p^n \right).
+\end{equation}
+As we should have $\nabla \cdot u^{n+1} = 0$, taking the divergence of \cref{eq:correction} gives us
+\begin{equation}
+    \nabla \cdot u^* = \frac{\Delta t}{\rho} \nabla^2 \left( p^{n + 1} - p^{n} \right).
+\end{equation}
+Letting now $\phi = p^{n + 1} - p^{n}$, we can write this as
+\begin{equation}
+    \nabla^2 \phi = \frac{\rho}{\Delta t} \nabla \cdot u^*,
+\end{equation}
+which we recognize as a Poisson problem, as $u^*$ is known.
+
+This basically gives us all the ingredients we need for a scheme, which we summarize as
+\begin{enumerate}
+    \item Compute the tentative velocity
+        \begin{equation}
+            u^*  = u^n + \Delta t \left(
+                - u^n \cdot \nabla u^n
+                -\frac{\nabla p^n}{\rho}
+                + \nu \nabla^2 u^n
+                + f^n
+            \right).
+        \end{equation}
+
+    \item Solve the Poisson problem
+        \begin{equation}\label{eq:possion}
+            -\nabla^2 \phi = -\frac{\rho}{\Delta t} \nabla \cdot u^*
+        \end{equation}
+        in order to find the update for the pressure.
+
+    \item Update the velocity by
+        \begin{equation}
+            u^{n + 1} = u^* - \frac{\Delta t}{\rho} \nabla \phi.
+        \end{equation}
+
+    \item Update the pressure by
+        \begin{equation}
+            p^{n + 1} = p^n + \phi.
+        \end{equation}
+\end{enumerate}
+This scheme is rather simple when stated like this, however there are some unadressed issues.
+Firstly is the issue of boundary trouble.
+As we need to solve a Poisson problem in the pressure update, we require boundary conditions along the entire boundary, even though this isn't strictly necessary in the original problem.
+
+Another approach is to use an implicit scheme, given where we get the tentative velocity by
+\begin{equation}
+    \frac{u^* - u^n}{\Delta t} + u^* \cdot \nabla u^* = -\frac{\nabla p^n}{\rho} + \nu \nabla^2 u^* + f^{n + 1}.
+\end{equation}
+Rearranging this again leads to
+\begin{equation}
+    u^* - \Delta t \left(
+        (-u^* \cdot \nabla u^*)
+        - \frac{1}{\rho} \nabla p^n
+        + \nu \nabla^2 u^*
+    \right)
+    = u^n + \Delta t f^{n + 1}.
+\end{equation}
+The term $u^* \cdot \nabla u^*$ is problematic as it is non-linear, however we can apply a typical linearization technique by replacing it with $u^n \cdot \nabla u^*$ to get
+\begin{equation}
+    u^* - \Delta t \left(
+        (-u^n \cdot \nabla u^*)
+        - \frac{1}{\rho} \nabla p^n
+        + \nu \nabla^2 u^*
+    \right)
+    = u^n + \Delta t f^{n + 1}.
+\end{equation}
+What we really want is however
+\begin{equation}
+    u^{n + 1} - \Delta t \left(
+        (-u^{n} \cdot \nabla u^{n + 1})
+        - \frac{1}{\rho} \nabla p^n
+        + \nu \nabla^2 u^{n + 1}
+    \right)
+    = u^n + \Delta t f^{n + 1}.
+\end{equation}
+Subtracting the first equation from the second again now gives us a more complicated expression.
+
+For simplicity, we introduce the convection-diffusion operator
+\begin{equation}
+    s(u^c) = \Delta t \left( -u^n \cdot \nabla u^c + \nu \nabla^2 u^c \right).
+\end{equation}
+With
+\begin{equation}
+    u^{n+1} = u^* + u^c,
+\end{equation}
+we can now write
+\begin{equation}
+    \begin{split}
+        u^c - s(u^c) + \frac{\Delta t}{\rho}\nabla \phi &= 0 \\
+        \nabla \cdot u^c &= - \nabla \cdot u^*.
+    \end{split}
+\end{equation}
+So far, we haven't gotten any closer to our deisred goal, as it it just as hard as the original equations.
+However, note that we are using a first order approximation to the time derivative, and as the leading term in $s(u^c)$ is first order, we can drop it while still having a first order approximation.
+We then get
+\begin{equation}
+    \begin{split}
+        u^c + \frac{\Delta t}{\rho} \nabla \phi &= 0 \\
+        \nabla \cdot u^c &= -\nabla \cdot u^*,
+    \end{split}
+\end{equation}
+where we can again rewrite the first equation as
+\begin{equation}
+    -\nabla^2 \phi = - \frac{\rho}{\Delta t} \nabla \cdot u^*.
+\end{equation}
+
+This second approach amounts to the Incremental Pressure Correction Scheme (IPCS), which consists of the four steps
+\begin{enumerate}
+    \item Compute the tentative velocity
+        \begin{equation}
+            u^* - s(u^*) + \frac{\Delta}{\rho}\nabla p^n = f^{n + 1}.
+        \end{equation}
+
+    \item Solve the Poisson problem for the pressure
+        \begin{equation}
+            -\nabla^2 \phi = - \frac{\rho}{\Delta t} \nabla \cdot u^*
+        \end{equation}
+
+    \item Update the velocity
+        \begin{equation}
+            u^{n + 1} = u^* - \frac{\Delta t}{\rho} \nabla \phi
+        \end{equation}
+
+    \item Update the pressure
+        \begin{equation}
+            p^{n + 1} = p^n + \phi
+        \end{equation}
+\end{enumerate}
+
+\subsection{Issues with operator splitting}
+Operator splitting introduces trouble along the boundary.
+NS in itself, in 3D, requires 3 conditions in every point at the boundary.
+IPCS however requries 4 conditions along the boundary, 3 for the tentative velocity, and 1 for the Poisson equation.
+
+We can derive boundary conditions for $\phi$ in two ways:
+\begin{enumerate}
+    \item From the scheme
+        \begin{enumerate}
+            \item \[
+                    u^{n + 1} = u^* - \frac{\Delta t}{\rho} \nabla \phi
+                \]
+
+            \item As $u^{n+1}$ and $u^*$ have the same BCs, we obtain homogenous Neumann conditions for $\phi$, as
+                \begin{equation}
+                    \nabla \phi \cdot n = \frac{\rho}{\Delta t} (u^{n + 1} - u^*) \cdot n = 0
+                \end{equation}
+        \end{enumerate}
+
+    \item From the Navier--Stokes equations we have that % chktex 8
+        \begin{enumerate}
+            \item \[
+                    \nabla p^n = - \rho\left(
+                        \frac{\partial u^n}{\partial t} + u^n \cdot \nabla u^n
+                    \right) + \mu\nabla^2 u^n + f
+                \]
+
+            \item As $\phi = p^{n+1} - p^n$ and \( p^{n + 1} \neq p^n \) we obtain a non-homogeneous condition.
+        \end{enumerate}
+\end{enumerate}
+In conclusion, we arrive at two different conditions which both seem reasonable.
+The difference between the two is first order.
+
+\subsection{Algebraic splitting}
+Here, we firstly seek the weak form of the NS equations.
+We use \( \langle \cdot, \cdot \rangle \) to denote the \(L^2\)-inner product.
+Multiplying the momemtum equation by a test and integrating by parts then yields
+\begin{equation}
+    \langle \rho \frac{\partial u}{\partial t} , v \rangle
+    + \langle \rho u \cdot \nabla u, v \rangle
+    - \langle p, \nabla \cdot v \rangle
+    + \langle \nabla u, \nabla v \rangle
+    = \langle f, v \rangle + \langle t_N, v \rangle_{\Gamma_N},
+\end{equation}
+doing the same with the continuity equation yields
+\begin{equation}
+    \langle \nabla \cdot u, q \rangle = 0.
+\end{equation}

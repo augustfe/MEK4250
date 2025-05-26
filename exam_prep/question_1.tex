@@ -4,3 +4,50 @@ Explain the concept of functionals and function spaces.
 How are degrees of freedom used to ensure that the finite element spaces are part of certain function spcaes?
 Show that a finite element may conveniently be defined in terms of a reference element.
 List common elements in common spaces.
+
+\subsection{Ciarlet's definition of a finite element}
+Ciarlet defines a finite element by a triplet $(T, V , D)$, where
+\begin{itemize}
+    \item
+        $T$ is a bounded domain in $R^d$, most typically a polyhedron.
+
+    \item
+        $V = \{\psi_i\}_{i = 1}^n$ is a set of linearly independent basis functions on $T$
+
+    \item
+        $D = \{d_i\}_{i = 1}^n$ is a set of (linearly independent) degrees of freedom defined in terms of linear functionals on $V$.
+        (We remark for $v \in V$ we may evaluate $d_i(v)$ since $d_i$ is a linear functional on $V$.)
+\end{itemize}
+$T$ defines the triangulation, or cells, in our domain.
+The basis functions are then just defined on their cell $T$.
+The magic happens when we introduce $D$, dubbed the degrees of freedom, or dofs for short.
+They are in a sense how we ``tie'' the function spaces together, as they are originally just defined locally.
+
+Most elements are implemented through a nodal basis, defined by the set of basis functions $\{\phi_i\}_{i = 0}^n$ satsifying $d_j(\phi_i) = \delta_{ij}$.
+The simplest example is the Lagrange element, where for a basis function $L_j$, the dofs are defined by
+\begin{equation}
+    d_i(L_j) = L_j(x_i) = \delta_{ij}.
+\end{equation}
+Initially, the set $\{x_i\}$ consists of the nodes of each triangle.
+
+Say we have two triangles, each with the vertices $\{x_1, x_2, x_3\}$ and $\{x_4, x_5, x_6\}$ respectively.
+If the triangles are next to eachother, we would perhaps then have that $x_2 = x_4$ and $x_3 = x_5$.
+However, we still av the set of dofs $\{d_i\}_{i = 1}^{6}$, even though we only have four unique points.
+This results in discontinuous Lagrange elements, as they do not directly communicate across the boundaries.
+If we however say that $d_2 = d_4$ and $d_3 = d_5$, we would have continuous elements.
+
+\subsection{Concept of functionals and function spaces}
+A function space is a vector space where each element is a function.
+Typically, the function spaces are defined by some properties, for instance the space of all continuous functions, all functions with a finite integral, and especially in our case all functions where the function as well as the derivatives have finite integrals.
+This essentially forms our ``main'' space $H^1(\Omega)$, defined by
+\begin{equation}
+    H^1(\Omega) =
+    \left\{
+        f
+        :
+        \int_{\Omega} \abs{f}^2 + \abs{\nabla f}^2 \diff x < \infty
+    \right\}.
+\end{equation}
+A functional is then simply something which takes in a vector, for instance from a function space, and returns a number, either real or complex (although typically real in our case).
+
+\subsection{How DOFs define our space}
