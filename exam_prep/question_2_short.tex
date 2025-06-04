@@ -1,0 +1,93 @@
+The Poisson problem with a variable coefficient is given by
+\begin{equation}
+    \begin{split}
+        -\nabla \cdot \left( \kappa \nabla u\right) &= f \qquad \text{in } \Omega,\\
+        u &= g \qquad \text{on } \partial\Omega_D, \\
+        \kappa \frac{\partial u}{\partial n} &= h \qquad \text{on } \partial\Omega_N,
+    \end{split}
+\end{equation}
+where we assume that $\kappa$ is positive, symmetric and bounded.
+
+In order to get the weak form of this problem, we multiply by a test function $v$ and integrate by parts, which yields
+\begin{align*}
+    \int_\Omega -\nabla \cdot \left( \kappa \nabla u \right) v \diff x
+    &= \int_\Omega f \, v \diff x \\
+    \int_\Omega \kappa \nabla u \cdot \nabla v \diff x &= \int_{\Omega} f \, v \diff x + \int_{\partial\Omega} \kappa \frac{\partial u}{\partial n} \, v \diff s.
+\end{align*}
+We can split the boundary integral into two parts, one for the Dirichlet boundary and one for the Neumann boundary:
+\begin{align*}
+    \int_{\partial\Omega} \kappa \frac{\partial u}{\partial n} \, v \diff s
+    &= \int_{\partial\Omega_D}  \kappa \frac{\partial u}{\partial n} \, v \diff s + \int_{\partial\Omega_N} h \, v \diff s \\
+    &= \int_{\partial\Omega_D} \kappa \frac{\partial u}{\partial n} \, 0 \diff s + \int_{\partial\Omega_N} h \, v \diff s.
+\end{align*}
+As the solution is known along the Dirichlet boundary, we can choose $v \in H^1_{0,D}(\Omega)$, which makes the boundary integral there vanish.
+This leaves us with the weak form of the Poisson problem, which amounts to finding $u \in H_{g, D}^1(\Omega)$ such that
+\begin{equation}
+    \int_{\Omega} \kappa \nabla u \cdot \nabla v \diff x = \int_{\Omega} f \, v \diff x + \int_{\partial\Omega_N} h \, v \diff s
+    \qquad \forall v \in H^1_{0,D}(\Omega).
+\end{equation}
+We then get the finite element formulation by discretizing the function space.
+
+For Lax--Milgram to hold, we need to show that: % chktex 8
+\begin{align}
+    a(u, v) &\leq C_1 \norm{u}_V \norm{v}_V, \qquad \forall u, v \in V, \\
+    a(u, u) &\geq C_2 \norm{u}_V^2, \qquad \forall u \in V, \\
+    L(v) &\leq C_3 \norm{v}_V, \qquad \forall v \in V,
+\end{align}
+where $a(u, v)$ is the bilinear form in the weak form, and $L(v)$ is the rhs.
+
+We firstly have
+\begin{equation}
+    a(u, v) = (\kappa \nabla u, \nabla v)_{L^2} \leq \kappa_{\max} \abs{u}_1 \abs{v}_1 \leq \kappa_{\max} \norm{u}_1 \norm{v}_1,
+\end{equation}
+where we've used the fact that $\kappa$ is bounded and the Cauchy--Schwarz inequality.
+
+Next, we have
+\begin{equation}
+    a(u, u) = (\kappa \nabla u, \nabla u)_{L^2} \geq \kappa_{\min} \abs{u}_1^2 \geq C_2 \norm{u}_1^2,
+\end{equation}
+where we've used the fact that $\kappa$ is bounded below and positive.
+We've also used the fact that the $H^1$-norm is equivalent to the $H^1$-semi-norm on $H^1_0$, applying lifting if necessary.
+
+Finally, we have
+\begin{align*}
+    L(v) &= \int_{\Omega} f \, v \diff x + \int_{\partial\Omega_N} h \, v \diff s \\
+    &\leq \norm{f}_{L^2(\Omega)} \norm{v}_{L^2(\Omega)} + \norm{h}_{L^2(\partial\Omega_N)} \norm{v}_{L^2(\partial\Omega_N)} \\
+    &\leq C_3 \norm{v}_V,
+\end{align*}
+assuming we can bound $\norm{v}_{L^2(\partial\Omega_N)}$ by $\norm{v}_1$, and that $f$ and $h$ are bounded.
+
+Extending the equation to the convection-diffusion equation, we simply add the convection term
+\begin{equation}
+    w \cdot \nabla u = 0
+\end{equation}
+to the strong form of the equation, which alters the weak form to
+\begin{equation}
+    a(u, v) = \int_{\Omega} \kappa \nabla u \cdot \nabla v \diff x + \int_{\Omega} w \cdot \nabla u\, v \diff x = \int_{\Omega} f \, v \diff x + \int_{\partial\Omega_N} h \, v \diff s,
+\end{equation}
+where we've made the assumption that $w$ is bounded.
+
+With the energy norm defined as $\norm{u}_E^2 = a(u, u)$, we have
+\begin{align*}
+    \norm{u - u_h}_E^2 &= a(u - u_h, u - u_h) \\
+    &= a(u - u_h, u - v + v - u_h) \\
+    &= a(u - u_h, u - v) + a(u - u_h, v - u_h) \\
+    &= a(u - u_h, u - v) + 0 \\
+    &\leq \norm{u - u_h}_E \norm{u - v}_E
+\end{align*}
+which gives us that
+\begin{equation}
+    \norm{u - u_h}_E \leq \norm{u - v}_E,
+\end{equation}
+where the choice of $v \in V$ is arbitrary.
+Here, we've used Galerkin orthogonality, which states that the error is orthogonal to the finite element space.
+Next, choosing $v$ to be the polynomial interpolant of $u$ of degree $t$, we have
+\begin{equation}
+    \norm{u - I_h u}_E^2 = a(u - I_h u, u - I_h u) \leq \frac{k_1}{1 + C_P} \norm{u - I_h u}_1^2 \leq \frac{k_1}{1 + C_P} (B h^t)^2 \norm{u}_{t+1}^2,
+\end{equation}
+which yields the error estimate
+\begin{equation}
+    \norm{u - u_h}_E \leq C h^t \norm{u}_{t+1}.
+\end{equation}
+
+With this, we can estimate the convergence rate with elements of a given degree, simply by changing the mesh size $h$, and comparing the error repeatedly.

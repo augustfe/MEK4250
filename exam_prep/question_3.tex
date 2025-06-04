@@ -4,7 +4,12 @@ Derive sufficient conditions that make the problem well-posed.
 Discuss why oscillations appear for standard Galerkin methods and show how SUPG methods resolve these problems.
 Discuss also approximation properties in light of Cea's lemma.
 
-\subsection{Weak form of the Convection-Diffusion equation}
+\subsection{Short-form answer}
+\input{question_3_short}
+
+\newpage
+\subsection{Long-form answer}
+\subsubsection{Weak form of the Convection-Diffusion equation}
 Here, we consider the convection-diffusion equation given by
 \begin{equation}
     \begin{split}
@@ -57,7 +62,7 @@ The weak form of the problem is then, find $u \in V$ such that
 \end{equation}
 % Here, we assume that $\kappa$ is symmetric, positive and bounded, and that $w$ is bounded.
 
-\subsection{Well-posedness}
+\subsubsection{Well-posedness}
 For well-posedness, we rely on the Lax--Milgram theorem, meaning we have to find sufficient conditions such that: % chktex 8
 \begin{enumerate}
     \item $a(u, u) \geq \alpha \norm{u}^2_V$ for some $\alpha > 0$ and all $u \in V$.
@@ -111,7 +116,7 @@ $c_w$ is then skew-symmetric, such that we have
 \end{equation}
 The convection-diffusion equation is then well-posed if we assume that $w$ is bounded and incompressible, such that $\nabla \cdot w = 0$.
 
-\subsection{Oscillations in Galerkin methods}
+\subsubsection{Oscillations in Galerkin methods}
 In order to illustrate the oscillations, we consider a simplified scenario in one dimension, where we set $w = -1$.
 We then have the equation
 \begin{equation}
@@ -161,7 +166,7 @@ This shows that we are then actually solving the problem
 \end{equation}
 as opposed to the original problem.
 
-\subsection{Streamline diffusion/Petrov--Galerkin} % chktex 8
+\subsubsection{Streamline diffusion/Petrov--Galerkin} % chktex 8
 Streamline diffusion/Petrov--Galerkin (SUPG) methods are a more general and ordered way of dealing with the oscillations we saw in the previous section. % chktex 8
 We then add the diffusion in a consistent way, such that we aren't changing the solution as $h \to 0$.
 
@@ -209,7 +214,7 @@ The right hand side also changes, denoting the linear form now as $b(L_j)$, such
 \end{equation}
 We are in other words changing both sides of the equation, such that the artifical diffusion is consistent.
 
-\subsection{Cea's lemma}
+\subsubsection{Cea's lemma}
 Cea's lemma states that, given the conditions for Lax--Milgram are satisfied, we have % chktex 8
 \begin{equation}
     \norm{u - u_h}_{V} \leq \frac{C B}{\alpha} h^t \norm{u}_{t + 1}.

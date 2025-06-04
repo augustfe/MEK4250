@@ -1,0 +1,147 @@
+We consider the form of the convection-diffusion equation given by
+\begin{equation}
+    \begin{split}
+        -\mu \Delta u + w \cdot \nabla u &= f \qquad \text{in } \Omega,\\
+        u &= g \qquad \text{on } \partial\Omega,
+    \end{split}
+\end{equation}
+where $\mu$ is the diffusion coefficient, $w$ is the velocity, and $f$ is the source term.
+Here, I'm going to be working with $g = 0$, in order to simplify the computations.
+This is a valid assumption, as we can apply lifting.
+
+Multiplying by a test function $v$ and integrating by parts yields on the lhs
+\begin{align*}
+    \int_{\Omega} -\mu \Delta u\, v + w \cdot \nabla u \, v \diff x
+    &= \int_\Omega \mu \nabla u \cdot \nabla v + w \cdot \nabla u\, v \diff x - \int_{\partial\Omega} \mu \frac{\partial u}{\partial n} v \diff s,
+\end{align*}
+which yields the weak form
+\begin{equation}
+    \int_{\Omega} \mu \nabla u \cdot \nabla v + \int_\Omega w \cdot \nabla u\, v \diff x = \int_{\Omega} f \, v \diff x + \int_{\partial\Omega} \mu \frac{\partial u}{\partial n} v \diff s.
+\end{equation}
+As $u$ is known along the boundary, we don't have to solve for $u$ here, and we can choose $v \in H^1_0(\Omega)$, which makes the boundary integral vanish.
+We are then left with the problem of finding $u \in H^1_0(\Omega)$ such that
+\begin{equation}
+    a(u, v) = L(v)\qquad \forall v \in H^1_0(\Omega),
+\end{equation}
+where
+\begin{equation}
+    a(u, v) = \int_{\Omega} \mu \nabla u \cdot \nabla v + \int_\Omega (w \cdot \nabla u) \, v \diff x
+    \quad\text{and}\quad
+    L(v) = \int_{\Omega} f \, v \diff x.
+\end{equation}
+
+In order to look closer at when Lax--Milgram holds, we split the bilinear form into two parts $b$ and $c_w$, by % chktex 8
+\begin{equation}
+    a(u, v) = b(u, v) + c_w(u, v),
+\end{equation}
+where
+\begin{equation}
+    b(u, v) = \int_{\Omega} \mu \nabla u \cdot \nabla v
+    \quad\text{and}\quad
+    c_w(u, v) = \int_\Omega (w \cdot \nabla u) \, v.
+\end{equation}
+We then have that
+\begin{align*}
+    c_w(u, v) &= \int_\Omega (w \cdot \nabla u) \, v \diff x \\
+    &= - \int_\Omega (w \cdot \nabla v)\, u \diff x - \int_{\Omega} \nabla \cdot w\, u\, v \diff x + \int_\Omega u\, v\, w \cdot n \diff s,
+\end{align*}
+where with Dirichlet conditions we can discard the last term.
+Then, when $\nabla \cdot w = 0$, we have that
+\begin{equation}
+    c_w(u, v) = - \int_\Omega (w \cdot \nabla v)\, u \diff x = - c_w(v, u).
+\end{equation}
+This means that $c_w$ is skew-symmetric, which results in $c_w(u, u) = 0$, which means that we have
+\begin{equation}
+    a(u, u) = b(u, u) \geq \mu \abs{u}_1^2,
+\end{equation}
+which means that we have coercivity, as $\abs{\cdot}_1$ is equivalent to $\norm{\cdot}_1$ on $H^1_0(\Omega)$.
+
+Next, we have
+\begin{align*}
+    a(u, v) &= \int_\Omega \mu \nabla u \cdot \nabla v + \int_\Omega (w \cdot \nabla u) \, v \diff x \\
+    &\leq \mu \abs{u}_1 \abs{v}_1 + \abs{w}_\infty \abs{u}_1 \norm{v}_0 \\
+    &\leq (\mu + \abs{w}_\infty C_\Omega) \abs{u}_1 \abs{v}_1.
+\end{align*}
+We therefore need $f \in H^{-1}_0$, $\nabla \cdot w = 0$, and $\abs{w}_\infty < \infty$ for Lax--Milgram to hold. % chktex 8
+This then gives us the stability estimate
+\begin{equation}
+    \abs{u}_1 \leq \frac{\mu + C_\Omega \norm{w}_\infty}{\mu} \norm{f}_{-1}.
+\end{equation}
+If then $C_\Omega \norm{w}_\infty \gg \mu$, the stability constant will be large, and the solution will be unstable.
+
+\subsubsection{Oscillations}
+In order to explain the oscillations, consider the 1D case, with $w = 1$.
+We then have the problem
+\begin{equation}
+    \begin{split}
+        - u_x - \mu u_{xx} &= 0 \\
+        u(0) = 0, \quad u(1) &= 1.
+    \end{split}
+\end{equation}
+Using linear first order Lagrange elements, we seek $u \in H^1_{(0,1)}$ such that
+\begin{equation}
+    \int_{0}^{1} - u_x v + \mu u_x v_x \diff x = 0
+\end{equation}
+for all $v \in H^1_{(0,0)}$.
+
+This discretization in 1D is equivalent with the finite difference scheme
+\begin{equation}
+    -\frac{\mu}{h^2}\left[
+        u_{i+1} - 2u_i + u_{i-1}
+    \right] - \frac{w}{2h} \left[
+        u_{i+1} - u_{i-1}
+    \right] = 0,
+\end{equation}
+with $u_0 = 0$ and $u_N = 1$.
+In the extreme case where $\mu = 0$, the oscillations appear as each $u_{i + 1}$ is coupled with $u_{i - 1}$, but not with $u_i$.
+Thus, for odd $N$, we will have that all even terms $u_{2i}$ will be equal to $u_0 = 0$, and all odd terms $u_{2i + 1}$ will be equal to $u_N = 1$.
+This is the oscillations we observe.
+
+If we however replace the central scheme for the derivative with a forward of backward scheme, we get
+\begin{equation}
+    \frac{w}{h} \left[
+        u_{i+1} - u_i
+    \right] = 0
+    \quad\text{or}\quad
+    \frac{w}{h} \left[
+        u_i - u_{i-1}
+    \right] = 0,
+\end{equation}
+which causes the oscillations to disappear, however the approximation is now only first order accurate.
+We call this the upwind scheme, as it is biased in the direction of the flow.
+
+If we discretize $u_x$ with a central scheme, and then add diffusion with a constant $\epsilon=h/2$, we get
+\begin{equation}
+    \frac{u_{i + 1} - u_{i - 1}}{2h} + \frac{h}{2} \frac{u_{i + 1} - 2u_i + u_{i - 1}}{h^2} = \frac{u_i - u_{i - 1}}{h},
+\end{equation}
+exactly the upwinding scheme!
+In these cases, we are then actually solving the problem
+\begin{equation}
+    -(\mu + \epsilon)u_{xx} + w u_x = f.
+\end{equation}
+
+The choice of $\epsilon$ was crucial in order to stabilize the scheme, however it was chosen rather arbitrarily.
+In order to avoid this, we turn to the Petrov--Galerkin method, where we allow the test function space to be different from the trial function space. % chktex 8
+We choose the trial function space to be as before, however in the test space we utilize the basis functions
+\begin{equation}
+    L_j = N_j + \beta h (w \cdot \nabla N_j).
+\end{equation}
+This leaves us with the matrix $A_{ij}$ defined by
+\begin{align*}
+    A_{ij} &= a(N_i, L_j) = a(N_i, N_j + \beta h (w \cdot \nabla N_j)) \\
+    &= \underbrace{
+        \mu \nabla N_i \cdot \nabla N_j + (w \cdot \nabla N_i) N_j \diff x
+    }_{\text{standard Galerkin}} \\
+    &\quad + \beta h \underbrace{
+        \int_\Omega \mu \nabla N_i \cdot \nabla(w \cdot \nabla N_j) \diff x
+    }_{ = 0 \text{ for linear elements}}
+    + \beta h \underbrace{
+        \int_{\Omega} (w \cdot \nabla N_i) (w \cdot \nabla N_j) \diff x
+    }_{\text{Artificial diffusion in $w$-direction}}.
+\end{align*}
+The rhs also changes, as
+\begin{equation}
+    L(L_j) = \int_\Omega f\, L_j \diff x
+    = \int_\Omega f( N_j + \beta h (w \cdot \nabla N_j) ) \diff x,
+\end{equation}
+which means that we are adding diffusion in a consistent way to the rhs as well.
