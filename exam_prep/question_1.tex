@@ -5,7 +5,12 @@ How are degrees of freedom used to ensure that the finite element spaces are par
 Show that a finite element may conveniently be defined in terms of a reference element.
 List common elements in common spaces.
 
-\subsection{Ciarlet's definition of a finite element}
+\subsection{Short-form answer}
+\input{question_1_short.tex}
+
+\subsection{Long-form answer}
+
+\subsubsection{Ciarlet's definition of a finite element}
 Ciarlet defines a finite element by a triplet $(T, V , D)$, where
 \begin{itemize}
     \item
@@ -36,7 +41,7 @@ However, we still av the set of dofs $\{d_i\}_{i = 1}^{6}$, even though we only 
 This results in discontinuous Lagrange elements, as they do not directly communicate across the boundaries.
 If we however say that $d_2 = d_4$ and $d_3 = d_5$, we would have continuous elements.
 
-\subsection{Concept of functionals and function spaces}
+\subsubsection{Concept of functionals and function spaces}
 A function space is a vector space where each element is a function.
 Typically, the function spaces are defined by some properties, for instance the space of all continuous functions, all functions with a finite integral, and especially in our case all functions where the function as well as the derivatives have finite integrals.
 This essentially forms our ``main'' space $H^1(\Omega)$, defined by
@@ -50,4 +55,4 @@ This essentially forms our ``main'' space $H^1(\Omega)$, defined by
 \end{equation}
 A functional is then simply something which takes in a vector, for instance from a function space, and returns a number, either real or complex (although typically real in our case).
 
-\subsection{How DOFs define our space}
+\subsubsection{How DOFs define our space}

@@ -7,7 +7,12 @@ Consider extensions to e.g.\ convection-diffusion equation and the elasticity eq
 Derive \textit{a priori} error estimates in terms of Cea's lemma for the finite element method in the energy norm.
 Describe how to perform an estimation of convergence rates.
 
-\subsection{Weak form of the Poisson equation}
+\subsection{Short-form answer}
+\input{question_2_short}
+
+\subsection{Long-form answer}
+
+\subsubsection{Weak form of the Poisson equation}
 The Poisson problem with a variable coefficient $\kappa$ is given by
 \begin{equation}
     \begin{split}
@@ -56,7 +61,7 @@ This gives us the weak formulation for the Poisson problem
     \int_\Omega \kappa \nabla u \cdot \nabla v \, \diff x = \int_\Omega f \, v \, \diff x + \int_{\partial\Omega_N} h \, v \, \diff s.
 \end{equation}
 
-\subsection{Lax--Milgram's theorem} % chktex 8
+\subsubsection{Lax--Milgram's theorem} % chktex 8
 Lax--Milgram's theorem states: % chktex 8
 \begin{theorem}
     Let $V$ be a Hilbert space, $a(\cdot, \cdot)$ be a bilinear form, $L(\cdot)$ be a linear form, and let the following three conditions be satisfied:
@@ -149,7 +154,7 @@ Lastly, we have
 showing that the third condition is satisfied as well.
 Here, we assume that $f \in L^2(\Omega)$ and $h \in L^2(\partial\Omega_N)$, which is a reasonable assumption.
 
-\subsection{Extension to convection-diffusion equation}
+\subsubsection{Extension to convection-diffusion equation}
 The convection-diffusion equation is given by
 \begin{equation}
     \begin{split}
@@ -162,7 +167,7 @@ where $w$ is the convection term.
 
 {\Large To be continued}
 
-\subsection{Cea's lemma}
+\subsubsection{Cea's lemma}
 Cea's lemma states that if $u_h$ is the finite element solution, and $u$ is the exact solution, then
 \begin{equation}
     \norm{u - u_h}_V \leq \frac{C B}{\alpha} h^t \norm{u}_{t + 1},
@@ -198,7 +203,7 @@ This finally gives us that
 \end{equation}
 I believe this is what the question is asking for, but I am not sure.
 
-\subsection{Convergence rates}
+\subsubsection{Convergence rates}
 We can estimate the convergence rates by looking at the error estimates for varying mesh sizes $h$.
 Considering the error estimates for $h = h_1$ and $h = h_2$, we have
 \begin{equation*}
