@@ -1,0 +1,40 @@
+The incompressible Navier--Stokes equation is given by % chktex 8
+\begin{equation}
+    \begin{split}
+        \frac{\partial u}{\partial t} + u \cdot \nabla u = \frac{\nabla p}{\rho} + \nu \nabla^2u + f, \\
+        \nabla \cdot u = 0.
+    \end{split}
+\end{equation}
+Operator splitting refers to discretizing the equation in time before solving the equation in space.
+Algebraic splitting on the other hand refers to splitting the equation in space first.
+
+When operator splitting, we typically firstly discretize with a forward Euler scheme, or similar, which gives us an equation of the form
+\begin{equation}
+    \frac{u^{n+1} - u^n}{\Delta t} + u^n \cdot \nabla u^n = \frac{\nabla p^n}{\rho} + \nu \nabla^2 u^n + f^n.
+\end{equation}
+This has some issues, primarily the fact that we have no way of updating the pressure, as we have no expression for $p^{n+1}$.
+In addition, we have no reason to assume that $\nabla \cdot u^{n+1} = 0$.
+
+When algebraically splitting, we first find the weak form of the momentum equation, which is given by, with $\inp{\cdot}{\cdot}$ denoting the inner product in $L^2(\Omega)$,
+\begin{equation}
+    \inp*{\rho \frac{\partial u}{\partial t}}{v}
+    + \inp{\rho u \cdot \nabla u}{v}
+    - \inp{p}{\nabla \cdot v}
+    + \inp{\nabla u}{\nabla v}
+    = \inp{f}{v}
+    + \inp{t_N}{v}_{\partial\Omega_N},
+\end{equation}
+while the weak form of the continuity equation is given by
+\begin{equation}
+    \inp{\nabla \cdot u}{q} = 0.
+\end{equation}
+
+We can then rewrite this in the discretized matrix form as
+\begin{equation}
+    \begin{split}
+        M \frac{\partial u}{\partial t} + N(u)u + A u + B p &= f \\
+        B^T u &= 0,
+    \end{split}
+\end{equation}
+with the corresponding matrices as in the weak form.
+This system however carries some issues, as it is non-linear, non-symmetric and indefinite, and there is in general no good method for solving it.

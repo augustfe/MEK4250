@@ -4,7 +4,11 @@ We remark that algebraic splitting is a term usually used for discretizations wh
 Show disadvantages for operator splitting schemes associated with boundary conditions.
 Explain the advantage with operator splitting schemes.
 
-\subsection{Operator splitting} % chktex 8
+\subsection{Short-form answer}
+\input{question_5_short}
+
+\subsection{Long-form answer}
+\subsubsection{Operator splitting} % chktex 8
 The incompressible Navier--Stokes equation is given by % chktex 8
 \begin{equation}
     \begin{split}
@@ -182,7 +186,7 @@ This second approach amounts to the Incremental Pressure Correction Scheme (IPCS
         \end{equation}
 \end{enumerate}
 
-\subsection{Issues with operator splitting}
+\subsubsection{Issues with operator splitting}
 Operator splitting introduces trouble along the boundary.
 NS in itself, in 3D, requires 3 conditions in every point at the boundary.
 IPCS however requries 4 conditions along the boundary, 3 for the tentative velocity, and 1 for the Poisson equation.
@@ -215,7 +219,7 @@ We can derive boundary conditions for $\phi$ in two ways:
 In conclusion, we arrive at two different conditions which both seem reasonable.
 The difference between the two is first order.
 
-\subsection{Algebraic splitting}
+\subsubsection{Algebraic splitting}
 Here, we firstly seek the weak form of the NS equations.
 We use \( \langle \cdot, \cdot \rangle \) to denote the \(L^2\)-inner product.
 Multiplying the momemtum equation by a test and integrating by parts then yields
