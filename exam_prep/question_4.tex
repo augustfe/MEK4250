@@ -5,7 +5,12 @@ Explain why oscillations might appear in the pressure for some discretization te
 Present expected approximation properties for mixed elements that satisfy the inf-sup condition, and discuss a few examples like e.g.\ Taylor--Hood, Mini, and Crouzeix--Raviart. % chktex 8
 Discuss also how one might cirumvent the inf-sup condition by stabilization.
 
-\subsection{Weak form of Stokes problem}
+\subsection{Short-form answer}
+\input{question_4_short}
+
+\newpage
+\subsection{Long-form answer}
+\subsubsection{Weak form of Stokes problem}
 The Stokes problem describes the flow of a slowly moving viscous incompressible Newtonian fluid.
 Let $u : \Omega \to \mathbb{R}^n$ be the fluid field, and $p: \Omega \to \mathbb{R}$ be the fluid pressure.
 Stokes problem can then be written as
@@ -88,7 +93,7 @@ Find $u_h \in V_{g, h}$ and $p_h \in Q_h$ such that
     \end{split}
 \end{equation}
 
-\subsection{Brezzi conditions}
+\subsubsection{Brezzi conditions}
 For a saddle point problem of the form \cref{eq:stokes-fem} to be well-posed, we require that four conditions are satisfied.
 \begin{enumerate}
     \item Boundedness of $a$:
@@ -131,7 +136,7 @@ For a saddle point problem of the form \cref{eq:stokes-fem} to be well-posed, we
 The first three conditions are easily verified for Stokes problem, while the last one is difficult unless the elements are designed specifically to meet this condition.
 As the first three a rather simple, they are included here for completeness.
 
-\subsubsection{Boundedness of \texorpdfstring{$a$}{a}}
+\paragraph{Boundedness of \texorpdfstring{$a$}{a}}
 Let $u_h, v_h \in V_h$.
 Then we have by the Cauchy--Schwarz inequality % chktex 8
 \begin{equation}
@@ -142,7 +147,7 @@ Then we have by the Cauchy--Schwarz inequality % chktex 8
 \end{equation}
 This shows that $a$ is bounded, with $C_1 = 1$.
 
-\subsubsection{Boundedness of \texorpdfstring{$b$}{b}}
+\paragraph{Boundedness of \texorpdfstring{$b$}{b}}
 Let $u_h \in V_h$ and $q_h \in Q_h$.
 We again utilize Cauchy--Schwarz inequality in order to show the bound, as % chktex 8
 \begin{equation}
@@ -153,7 +158,7 @@ We again utilize Cauchy--Schwarz inequality in order to show the bound, as % chk
 \end{equation}
 The tricky portion here is to bound $\norm{\nabla \cdot u_h}_{L^2} \leq \norm{u_h}_{1}$, however we can actually do it without a coefficient, according to Kent.
 
-\subsubsection{Coercivity of \texorpdfstring{$a$}{a}}
+\paragraph{Coercivity of \texorpdfstring{$a$}{a}}
 Finally, let $u_h \in V_h$.
 Then, we simply have
 \begin{equation}
@@ -164,7 +169,7 @@ Then, we simply have
 \end{equation}
 where we can find $C_3$ as the norms are equivalent on $H^1_0$.
 
-\subsection{Oscillations in the pressure}
+\subsubsection{Oscillations in the pressure}
 The simplest case where we discover oscillations in the pressure, is in Poiseuille flow.
 The analytical solution here is given by
 \begin{equation}
@@ -182,7 +187,7 @@ The reason for the appearance of the oscillations with the $P_1$--$P_1$ elements
 That is, they do not fulfill the fourth Brezzi condition.
 The $P_{2}$--$P_{1}$ elements however fulfill this, resulting in a nice solution.
 
-\subsection{inf-sup and approximation}
+\subsubsection{inf-sup and approximation}
 In order to obtain order optimal convergence rates, we require that the $\inf$-$\sup$ condition,
 \begin{equation}
     \inf_{p \in Q_h} \sup_{v \in V_{h, g}} \frac{(p, \nabla \cdot v)}{\norm{v}_1 \norm{p}_0}
@@ -198,7 +203,7 @@ When this is satisfied, we get convergence
 where $k$ and $\ell$ are the polynomial degree of the velocity and pressure respectively.
 Let's see how this is reflected in the approximations of a couple elements.
 
-\subsubsection{The Taylor--Hood element} % chktex 8
+\paragraph{The Taylor--Hood element} % chktex 8
 For the Taylor--Hood element, we have $u \in P_2$ and $p \in P_1$, subject to the restriction that they are continuous across elements. % chktex 8
 This element satisfies the $\inf$-$\sup$ condition, and we can therefore directly get the approximation property
 \begin{equation}
@@ -211,7 +216,7 @@ For the generalized $P_{k}$--$P_{k-1}$ Taylor--Hood element, we similarly get % 
     \leq C h^k (\norm{u}_{k+1} + \norm{p}_k).
 \end{equation}
 
-\subsubsection{The Crouzeix--Raviart element} % chktex 8
+\paragraph{The Crouzeix--Raviart element} % chktex 8
 The Crouzeix--Raviart element also satisfies the $\inf$-$\sup$ condition, and are given by $u \in P_1$ and $p \in P_0$. % chktex 8
 Here, $u$ is \emph{only} continuous in the mid-point of each side, and $p$ is discontinuous.
 We then get the error estimate
@@ -226,7 +231,7 @@ It is $\inf$-$\sup$ stable with our formulation of Stokes problem, however if we
 where $\epsilon(u) = \frac{1}{2} (\nabla + \nabla^T)$ is the symmetric gradient, it cannot be used.
 We can generalize the element to odd degrees, but not even.
 
-\subsubsection{The Mini element}
+\paragraph{The Mini element}
 The Mini element is linear in velocity and pressure, however it contains an extra degree of freedom in the velocity which is zero on all edges, dubbed a bubble function.
 For instance in the 2D case, the bubble function, on the reference triangle, is given by
 \begin{equation}
@@ -240,7 +245,7 @@ This yields the error estimate
 \end{equation}
 Note that the convergence in the velocity is linear, meaning that adding the bubble function brought stability, but not an increase in approximation order.
 
-\subsection{Stability without inf-sup}
+\subsubsection{Stability without inf-sup}
 When stabilizing, we typically replace a system of the form
 \begin{equation}
     \begin{split}

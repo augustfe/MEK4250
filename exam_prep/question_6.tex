@@ -1,0 +1,67 @@
+\section{Other formulations}
+Consider the various formulations of the Poisson problem.
+Show that minimization of energy
+\begin{equation}
+    \int_\Omega \frac{1}{2}(\nabla u)^2 - f \, u \diff x
+\end{equation}
+corresponds to a weak formulation that through Green's lemma gives a strong formulation.
+Do the same thing for the least square formulation and arrive at a bi-harmonic equation with some additional boundary conditions.
+Consider both the mixed formulation and least square formulation of the mixed formulation, and note that only the first requires the Brezzi conditions.
+
+\subsection{Short-form answer}
+The strong formulation of the Poisson problem is
+\begin{equation}
+    -\Delta u_S = f \quad \text{in } \Omega,
+    \quad u_S = g \quad \text{on } \partial\Omega.
+\end{equation}
+This formulation requires that $u_S \in C^2(\Omega)$, given an $f \in C^0(\Omega)$.
+The weak formulation on the other hand is to find $u_W \in H^1_g(\Omega)$ given an $f \in L^2(\Omega)$ such that
+\begin{equation}
+    \int_\Omega \nabla u_W \cdot \nabla v = f \, v \diff x.
+\end{equation}
+We have now eased the continuity requirement on $u_W$.
+
+We can also derive the weak solution from the energy minimization problem
+\begin{equation}
+    u_W = \argmin_{u \in H^1_g(\Omega)} \int_\Omega \frac{1}{2}(\nabla u)^2 - f \, u \diff x = \argmin_{u \in H^1_g(\Omega)} E(u, f).
+\end{equation}
+In order to see this, note that $H^1_g(\Omega)$ is known to be separable, which means that it is spanned by a countable set of basis functions $\{ \psi_i \}_{i = 1}^\infty$.
+This means that we can write any $v \in H^1_g(\Omega)$ as
+\begin{equation}
+    v = \sum_i v_i \psi_i,
+\end{equation}
+and we then have
+\begin{equation}
+    \frac{\partial v}{\partial v_i} = \psi_i,
+\end{equation}
+or specifically in our case \( u_W = \sum_{i} u^W_i \psi_i \).
+We then seek to find $u_W$ such that
+\begin{equation}
+    \frac{\partial E}{\partial u_W} = 0.
+\end{equation}
+This gives us
+\begin{equation}
+    \frac{\partial E}{\partial u_i^W} = \int_\Omega \nabla u_W \cdot \nabla \psi_i - f \, \psi_i \diff x = 0,
+\end{equation}
+which is exactly the weak formulation we had before.
+
+As is a general strategy when approximating a function, we can also formulate a least squares problem based on the PDE.
+Here we seek to minimize the functional
+\begin{equation}
+    E_{LS}(v, f) = \int_\Omega (-\Delta v - f)^2 \diff x.
+\end{equation}
+If $u_S$ is the strong solution, then we clearly have that $E_{LS}(u_S, f) = 0$.
+If however we have a weak solution $u_W$, then we may have that $E_{LS}(u_W, f) = \infty$,
+as $u_W \in H^1(\Omega)$, meaning that we only have control over the first derivative.
+We must instead have that $u_{LS} \in H^2(\Omega)$, in order the get the proper regularity.
+This means that we can write the least squares problem as
+\begin{equation}
+    u_{LS} = \argmin_{v \in H^2(\Omega)} E_{LS}(v, f).
+\end{equation}
+
+Solving this in the same manner as before, we find
+\begin{align*}
+    \frac{\partial E_{LS}}{\partial u_i^{LS}} &= \frac{\partial}{\partial u_i^{LS}} \int_\Omega (-\Delta u_{LS} - f)^2 \diff x \\
+    &= \int_{\Omega} \frac{\partial }{\partial u_i^{LS}} (-\Delta u_{LS} - f)^2 \diff x \\
+    &= 2 \int_{\Omega} (-\Delta u_{LS} - f) (-\Delta \psi_i) \diff x
+\end{align*}
